@@ -9,24 +9,35 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>customer-info-service-rest-api</artifactId>
+    <artifactId>customer-info-service-dto</artifactId>
     <packaging>jar</packaging>
-
     <dependencies>
-        <dependency>
-            <groupId>com.apigate</groupId>
-            <artifactId>exception-handling</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!-- Project modules -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>TODO enable this later
             <groupId>com.apigate</groupId>
-            <artifactId>apigate-utils</artifactId>
+            <artifactId>apigate-blacklist-entities</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>com.apigate</groupId>
+            <artifactId>exception-handling</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.apigate</groupId>
+            <artifactId>config-reader</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
         </dependency>
     </dependencies>
 </project>

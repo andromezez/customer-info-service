@@ -1,4 +1,4 @@
-package com.apigate.customer_info_service;
+package com.apigate;
 
 import com.apigate.config.Config;
 import org.apache.catalina.connector.Connector;

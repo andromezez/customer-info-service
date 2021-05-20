@@ -9,22 +9,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>customer-info-service-rest-api</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>apigate-utils</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.apigate</groupId>
-            <artifactId>exception-handling</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <artifactId>config-reader</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.apigate</groupId>
-            <artifactId>apigate-utils</artifactId>
+            <artifactId>exception-handling</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
