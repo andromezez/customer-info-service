@@ -1,16 +1,23 @@
 package com.apigate.apis.rest;
 
 import com.apigate.exceptions.business.EndpointDoesntExistException;
+import com.apigate.exceptions.internal.SystemErrorException;
 import com.apigate.logging.HTTPRequestLog;
 import com.apigate.logging.HTTPResponseLog;
+import com.apigate.logging.Logger;
 import com.apigate.utils.ObjectMapperUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Bayu Utomo
@@ -52,7 +59,25 @@ public class DefaultController {
     }
 
     @RequestMapping(value="**")
-    public ResponseEntity getAnythingelse() {
-        throw new EndpointDoesntExistException();
+    public ResponseEntity getAnythingelse(HttpServletRequest request) {
+        HttpServletRequest requestCacheWrapperObject
+                = new ContentCachingRequestWrapper(request);
+        requestCacheWrapperObject.getParameterMap();
+        ServletServerHttpRequest springRequestWrapper = new ServletServerHttpRequest(requestCacheWrapperObject);
+
+        String requestBody = "";
+        InputStream streamBody = null;
+        try {
+            streamBody = springRequestWrapper.getBody();
+            if(streamBody!=null){
+                requestBody = IOUtils.toString(streamBody, StandardCharsets.UTF_8 );
+            }
+        } catch (IOException e) {
+            throw new SystemErrorException(e);
+        }
+
+        HTTPRequestLog requestLog = logRequest(Logger.getReqIdFromContext(),requestBody, request);
+
+        throw new SystemErrorException(new Exception("Intentionally throw exception to test GCP stackdriver output on printing exception's stack traces"));
     }
 }

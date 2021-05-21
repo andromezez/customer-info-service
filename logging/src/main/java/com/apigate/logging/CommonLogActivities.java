@@ -36,13 +36,16 @@ public class CommonLogActivities extends HttpFilter {
                 com.apigate.logging.ServicesLog.getInstance().logInfo("clientCorrelationId " + CommonHeaders.CORRELATION_ID.getHeaderName() + " : " + clientCorrelationId);
                 response.addHeader(CommonHeaders.CORRELATION_ID.getHeaderName(),clientCorrelationId);
             }
-            if(httpRequestLogger.isDebugEnabled()){
+            /*Originally come from blacklist, but I think for customer info service,
+            printing the header for all incoming request is better for debugging since the main function is
+            handling routing of request response
+            if(httpRequestLogger.isDebugEnabled()){*/
                 request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
                     request.getHeaders(headerName).asIterator().forEachRemaining(value -> {
                         httpRequestLogger.debug("Request Header '"+headerName+"' = " + value);
                     });
                 });
-            }
+            //}
 
             super.doFilter(request, response, chain);
         }finally {
