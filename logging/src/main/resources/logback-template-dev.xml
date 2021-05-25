@@ -99,19 +99,19 @@
         <appender-ref ref="ASYNC_CommonLog"/>
     </root>
 
-    <logger name="com.apigate.blacklist_service.logging.HTTPRequestLog" level="INFO">
+    <logger name="com.apigate.logging.HTTPRequestLog" level="INFO">
         <appender-ref ref="ASYNC_HTTPRequestResponseLog" />
     </logger>
 
-    <logger name="com.apigate.blacklist_service.logging.HTTPResponseLog" level="INFO">
+    <logger name="com.apigate.logging.HTTPResponseLog" level="INFO">
         <appender-ref ref="ASYNC_HTTPRequestResponseLog" />
     </logger>
 
-    <!--<logger name="com.apigate.blacklist_service.logging.RepositoryLog" level="ERROR">
+    <!--<logger name="com.apigate.logging.RepositoryLog" level="ERROR">
         <appender-ref ref="ASYNC_RepositoryLog" />
     </logger>-->
 
-    <logger name="com.apigate.blacklist_service.logging.ServicesLog" level="WARN">
+    <logger name="com.apigate.logging.ServicesLog" level="WARN">
         <appender-ref ref="ASYNC_ServicesLog" />
     </logger>
     <!---->

@@ -42,7 +42,7 @@ public class CommonLogActivities extends HttpFilter {
             if(httpRequestLogger.isDebugEnabled()){*/
                 request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
                     request.getHeaders(headerName).asIterator().forEachRemaining(value -> {
-                        httpRequestLogger.debug("Request Header '"+headerName+"' = " + value);
+                        httpRequestLogger.info("Request Header '"+headerName+"' = " + value);
                     });
                 });
             //}

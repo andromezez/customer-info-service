@@ -1,5 +1,7 @@
 package com.apigate.apis.rest;
 
+import com.apigate.exceptions.AbstractException;
+import com.apigate.exceptions.HTTPResponseBody.ErrorInfo;
 import com.apigate.exceptions.business.EndpointDoesntExistException;
 import com.apigate.exceptions.internal.SystemErrorException;
 import com.apigate.logging.HTTPRequestLog;
@@ -8,6 +10,7 @@ import com.apigate.logging.Logger;
 import com.apigate.utils.ObjectMapperUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
@@ -26,6 +29,31 @@ import java.nio.charset.StandardCharsets;
 @Controller
 @RequestMapping("/")
 public class DefaultController {
+
+    private static final String RESPONSE_ENTITY_INITIAL_VALUE = "The initial value should have been overridden";
+
+    private class ExceptionResponse {
+        ResponseEntity<Object> responseEntity;
+        AbstractException ex;
+    }
+
+    private ExceptionResponse processException(HttpServletRequest request, Exception e){
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        AbstractException abstractException;
+        if(e instanceof AbstractException){
+            abstractException = ((AbstractException) e);
+        }else{
+            abstractException = new SystemErrorException(e);
+        }
+        var mapper = ObjectMapperUtils.getMapperInstance();
+        ResponseEntity<Object> responseEntity = ResponseEntity
+                .status(abstractException.getStatus())
+                .body(abstractException.getErrorInfo(request).toJson(mapper));
+        ObjectMapperUtils.returnToPool(mapper);
+        exceptionResponse.responseEntity = responseEntity;
+        exceptionResponse.ex = abstractException;
+        return exceptionResponse;
+    }
 
     private HTTPRequestLog logRequest(String reqId, /*CreateRequestDto TODO enable this later*/ String requestBody, HttpServletRequest request){
         ServletServerHttpRequest springRequestWrapper = new ServletServerHttpRequest(request);
@@ -60,24 +88,35 @@ public class DefaultController {
 
     @RequestMapping(value="**")
     public ResponseEntity getAnythingelse(HttpServletRequest request) {
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorInfo(request,new IllegalStateException(RESPONSE_ENTITY_INITIAL_VALUE)));
+        Logger.registerApiMethodEndpoint(Thread.currentThread().getStackTrace()[1].getMethodName());
+        HTTPRequestLog requestLog = new HTTPRequestLog(Logger.getReqIdFromContext(),"something wrong","something wrong","something wrong");
+
         HttpServletRequest requestCacheWrapperObject
                 = new ContentCachingRequestWrapper(request);
         requestCacheWrapperObject.getParameterMap();
         ServletServerHttpRequest springRequestWrapper = new ServletServerHttpRequest(requestCacheWrapperObject);
 
-        String requestBody = "";
+        String requestBody = "Error getting the body";
         InputStream streamBody = null;
-        try {
+
+        try{
             streamBody = springRequestWrapper.getBody();
             if(streamBody!=null){
                 requestBody = IOUtils.toString(streamBody, StandardCharsets.UTF_8 );
             }
-        } catch (IOException e) {
-            throw new SystemErrorException(e);
+
+            requestLog = logRequest(Logger.getReqIdFromContext(),requestBody, request);
+
+            throw new SystemErrorException(new Exception("Intentionally throw exception to test GCP stackdriver output on printing exception's stack traces"));
+
+        }catch (Exception e){
+            ExceptionResponse exceptionResponse = processException(request, e);
+            responseEntity = exceptionResponse.responseEntity;
+            throw exceptionResponse.ex;
         }
-
-        HTTPRequestLog requestLog = logRequest(Logger.getReqIdFromContext(),requestBody, request);
-
-        throw new SystemErrorException(new Exception("Intentionally throw exception to test GCP stackdriver output on printing exception's stack traces"));
+        finally {
+            logResponse(requestLog, responseEntity);
+        }
     }
 }
