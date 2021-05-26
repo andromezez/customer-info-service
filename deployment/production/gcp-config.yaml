@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: customer-info-service-config
+  namespace: customer-info
+data:
+  CUSTOMER_INFO_APPLICATION_PROFILE: prod
+  apigate.db.url: jdbc:postgresql://10.69.129.7:5432/prod_customer_info_service
+  apigate.db.schema: customer_info_service
+  apigate.instance.port: "8091"
+  apigate.partnertype.url: http://partner-service.partnerservice.svc.cluster.local:8090/api/v1/service-providers/hubAppId
+  apigate.partnertype.monitoring.url: http://partner-service.partnerservice.svc.cluster.local:8090/api/v1/service-providers
+  apigate.db.pool.size: "30"
+  apigate.server.threads.max: "30"

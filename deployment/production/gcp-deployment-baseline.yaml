@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-info-service-baseline
+  namespace: customer-info
+  labels:
+    app: customer-info-service
+    version: baseline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer-info-service
+      version : baseline
+  template:
+    metadata:
+      labels:
+        app: customer-info-service
+        version: baseline
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: prod-application2
+      containers:
+      - name: customer-info-service
+        image: '${#stage(''Get Baseline'').context["artifacts"][0]["reference"]}'
+        ports:
+        - containerPort: 8091
+        readinessProbe:
+          httpGet:
+            path: /monitor/health
+            port: 8091
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 200m
+            memory: "1Gi"
+          limits:
+            cpu: 2
+            memory: "1.5Gi"
+        env:
+        - name: apigate.partnertype.monitoring.url
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.partnertype.monitoring.url
+        - name: CUSTOMER_INFO_APPLICATION_PROFILE
+          valueFrom:
+            configMapKeyRef:
+              key: CUSTOMER_INFO_APPLICATION_PROFILE
+              name: customer-info-service-config
+        - name: apigate.db.url
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.db.url     
+        - name: apigate.db.schema
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.db.schema
+        - name: apigate.partnertype.url
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.partnertype.url
+        - name: apigate.instance.port
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.instance.port
+        - name: apigate.db.pool.size
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.db.pool.size
+        - name: apigate.server.threads.max
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.server.threads.max
+        - name: apigate.db.username
+          valueFrom:
+            secretKeyRef:
+              name: customer-info-service-secret
+              key: apigate.db.username
+        - name: apigate.db.password
+          valueFrom:
+            secretKeyRef:
+              name: customer-info-service-secret
+              key: apigate.db.password

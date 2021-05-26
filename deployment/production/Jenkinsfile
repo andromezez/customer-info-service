@@ -1,0 +1,98 @@
+pipeline {
+    
+    agent {
+      label 'jenkins-slave'
+  }
+    
+    options {
+      buildDiscarder(logRotator(numToKeepStr: '10'))
+      disableConcurrentBuilds()
+  }
+
+    environment {
+      _SONAR_PROJECT_NAME = 'Customer-Info-Service'
+      _NODE_VERSION       = '12.17.0'
+      _ENABLE_DEPLOYMENT  = 'FALSE' 
+       TAG_NAME = '' 
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+				script  {
+				   TAG_NAME = sh(script: "git describe --tags ${GIT_COMMIT}", returnStdout: true).trim()
+                }
+				sh "echo ${TAG_NAME}" 
+				sh "env"
+                }
+        }
+        stage('Install') {
+            steps {
+                sh 'mvn clean install'
+                }
+        }
+        stage('sonar_scanner') {
+            steps {
+                script  {
+                    echo "Run sonarqube scan : ${params.SONARQUBE}"
+                    if(params.SONARQUBE){
+                        sh '''
+                            ls /home/jenkins/agent
+                            echo "Display workspace content"
+                            curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh
+                            bash nodesource_setup.sh
+                            apt-get install -y nodejs
+                            curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+                            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+                            sudo apt-get update && sudo apt-get install yarn
+                            echo "Downloading sonar-scanner....."
+                            wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.3.0.2102-linux.zip
+                            echo "Download completed."
+                            echo "Unziping downloaded file..."
+                            apt-get update
+                            apt-get install unzip
+                            apt-get install pcregrep
+                            unzip sonar-scanner-cli-4.3.0.2102-linux.zip
+                            echo "Unzip completed."
+                            rm sonar-scanner-cli-4.3.0.2102-linux.zip
+                            mv sonar-scanner-4.3.0.2102-linux /var/opt/sonar-scanner
+                            export PATH="$PATH:/var/opt/sonar-scanner/bin"
+                            echo "Sonar Scanner CLI Installation completed successfully."
+                            cd /home/jenkins/agent/
+                            sonar-scanner -Dsonar.projectVersion=${GIT_COMMIT} -Dsonar.coverage.exclusions=**/* -Dsonar.host.url=${_SONAR_HOST_URL} -Dsonar.login=${_SONAR_LOGIN} -Dsonar.projectKey=${_SONAR_PROJECT_NAME} -Dsonar.sources=${WORKSPACE} -Dsonar.language=java -Dsonar.java.binaries=${WORKSPACE} 2>&1 | tee sonar-scanner-log.txt
+                            export STATUS_VALUE_URL="$(grep -oP '(?<=More about the report processing at ).+'  sonar-scanner-log.txt)"
+                            export STATUS_VALUE=""
+                            SCRIPT='while true; do if [ "$STATUS_VALUE" = "SUCCESS" ]; then echo "Scan PASSED: $STATUS_VALUE"; break; elif [ "$STATUS_VALUE" = "FAILED" ] || [ "$STATUS_VALUE" = "CANCELED" ]; then echo "Scan FAILED: $STATUS_VALUE"; exit 1; else export PAYLOAD=$(curl -u ${_SONAR_LOGIN}: $STATUS_VALUE_URL); export STATUS_VALUE=$(echo $PAYLOAD | pcregrep -o1 "(?<=\"status\")([^,]+)" | cut -c 4- ); STATUS_VALUE=${STATUS_VALUE%?} ; echo "STATUS_VALUE: $STATUS_VALUE"; fi ; sleep 2; done'
+                            echo $SCRIPT > script.sh
+                            chmod +x script.sh
+                            bash ./script.sh
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Build image') {
+            steps {
+                script  {
+                    echo "build docker image : ${params.DOCKER}"
+                    if(params.DOCKER){
+                        Image = docker.build("project-apigate-prod-hub/customer-info-service", "-f ./deployment/production/Dockerfile .")
+                    }
+                }
+            }
+        }
+        stage('Push image') {
+            steps {
+                script  {
+                    echo "push docker image : ${params.DOCKER}"
+                    if(params.DOCKER){
+                        docker.withRegistry('https://gcr.io', 'gcr:project-apigate-prod-hub') {
+                    	    Image.push("${BUILD_NUMBER}-${TAG_NAME}-${GIT_COMMIT}")
+                        }
+                    }
+                }
+            }
+        }
+   }
+ }
