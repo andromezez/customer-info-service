@@ -1,119 +1,63 @@
 <configuration>
     <property name="COMMON_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS Z, Asia/Kuala_Lumpur} [${HOSTNAME}] [%thread] %-5level %logger - [%X{apiMethodEndpoint}] [%X{reqId}] %msg%n" />
-    <property name="LOG_DIR" value="./logs" />
-    <property name="MAX_FILE_SIZE" value="100MB" />
-    <property name="MAX_FILE_HISTORY" value="60" />
-    <property name="TOTAL_SIZE_CAP" value="20GB" />
     <property name="ASYNC_QUEUE_SIZE" value="512" />
 
     <!--Appender block-->
-    <appender name="CommonLog_rolling_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/common.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${LOG_DIR}/common-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!-- each file should be at most ${MAX_FILE_SIZE}, keep ${MAX_FILE_HISTORY} days worth of history, but at most ${TOTAL_SIZE_CAP} -->
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-            <maxHistory>${MAX_FILE_HISTORY}</maxHistory>
-            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
-        </rollingPolicy>
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
         <encoder>
             <pattern>${COMMON_PATTERN}</pattern>
         </encoder>
     </appender>
-
-    <appender name="HTTPRequestResponseLog_rolling_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/HTTPRequestResponse.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${LOG_DIR}/HTTPRequestResponse-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!-- each file should be at most ${MAX_FILE_SIZE}, keep ${MAX_FILE_HISTORY} days worth of history, but at most ${TOTAL_SIZE_CAP} -->
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-            <maxHistory>${MAX_FILE_HISTORY}</maxHistory>
-            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
-        </rollingPolicy>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>TRACE</level>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+        </filter>
         <encoder>
             <pattern>${COMMON_PATTERN}</pattern>
         </encoder>
     </appender>
-
-    <!--disable the repository log. For now can't find the case to use it-->
-    <!--<appender name="RepositoryLog_rolling_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/Repository.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            &lt;!&ndash; rollover daily &ndash;&gt;
-            <fileNamePattern>${LOG_DIR}/Repository-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            &lt;!&ndash; each file should be at most ${MAX_FILE_SIZE}, keep ${MAX_FILE_HISTORY} days worth of history, but at most ${TOTAL_SIZE_CAP} &ndash;&gt;
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-            <maxHistory>${MAX_FILE_HISTORY}</maxHistory>
-            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>${COMMON_PATTERN}</pattern>
-        </encoder>
-    </appender>-->
-    <appender name="ServicesLog_rolling_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/Services.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${LOG_DIR}/Services-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!-- each file should be at most ${MAX_FILE_SIZE}, keep ${MAX_FILE_HISTORY} days worth of history, but at most ${TOTAL_SIZE_CAP} -->
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-            <maxHistory>${MAX_FILE_HISTORY}</maxHistory>
-            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>${COMMON_PATTERN}</pattern>
-        </encoder>
-    </appender>
-
     <!---->
 
 
     <!--ASYNC block-->
-    <appender name="ASYNC_CommonLog" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="ASYNC_STDERR" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
-        <appender-ref ref="CommonLog_rolling_appender"/>
+        <appender-ref ref="STDERR"/>
     </appender>
-
-    <appender name="ASYNC_HTTPRequestResponseLog" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="ASYNC_STDOUT" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
-        <appender-ref ref="HTTPRequestResponseLog_rolling_appender"/>
-    </appender>
-
-    <!--<appender name="ASYNC_RepositoryLog" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
-        <appender-ref ref="RepositoryLog_rolling_appender"/>
-    </appender>-->
-
-    <appender name="ASYNC_ServicesLog" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
-        <appender-ref ref="ServicesLog_rolling_appender"/>
+        <appender-ref ref="STDOUT"/>
     </appender>
     <!---->
 
 
-
     <!--Logger block-->
     <root level="INFO">
-        <appender-ref ref="ASYNC_CommonLog"/>
+        <appender-ref ref="ASYNC_STDERR"/>
+        <appender-ref ref="ASYNC_STDOUT"/>
     </root>
-
-    <logger name="com.apigate.logging.HTTPRequestLog" level="INFO">
-        <appender-ref ref="ASYNC_HTTPRequestResponseLog" />
-    </logger>
-
-    <logger name="com.apigate.logging.HTTPResponseLog" level="INFO">
-        <appender-ref ref="ASYNC_HTTPRequestResponseLog" />
-    </logger>
-
-    <!--<logger name="com.apigate.logging.RepositoryLog" level="ERROR">
-        <appender-ref ref="ASYNC_RepositoryLog" />
-    </logger>-->
-
-    <logger name="com.apigate.logging.ServicesLog" level="WARN">
-        <appender-ref ref="ASYNC_ServicesLog" />
-    </logger>
     <!---->
 
 </configuration>
