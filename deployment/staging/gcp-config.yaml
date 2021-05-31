@@ -4,7 +4,7 @@ metadata:
   name: customer-info-service-config
   namespace: customer-info
 data:
-  BLACKLIST_APPLICATION_PROFILE: stag
+  CUSTOMER_INFO_APPLICATION_PROFILE: stag
   apigate.db.url: jdbc:postgresql://10.176.163.3:5432/stg_customer_info_service
   apigate.db.schema: customer_info_service
   apigate.instance.port: "8091"
