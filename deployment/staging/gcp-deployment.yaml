@@ -89,3 +89,13 @@ spec:
             secretKeyRef:
               name: customer-info-service-secret
               key: apigate.db.password
+        - name: apigate.server.monitoring.port
+          valueFrom:
+            configMapKeyRef:
+              name: dialog-connector-service-config
+              key: apigate.server.monitoring.port
+        - name: apigate.server.monitoring.threads.max
+          valueFrom:
+            configMapKeyRef:
+              name: dialog-connector-service-config
+              key: apigate.server.monitoring.threads.max
