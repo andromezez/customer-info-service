@@ -92,10 +92,10 @@ spec:
         - name: apigate.server.monitoring.port
           valueFrom:
             configMapKeyRef:
-              name: dialog-connector-service-config
+              name: customer-info-service-config
               key: apigate.server.monitoring.port
         - name: apigate.server.monitoring.threads.max
           valueFrom:
             configMapKeyRef:
-              name: dialog-connector-service-config
+              name: customer-info-service-config
               key: apigate.server.monitoring.threads.max
