@@ -14,7 +14,12 @@
         <!-- Project modules -->
         <dependency>
             <groupId>com.apigate</groupId>
-            <artifactId>customer-info-service-rest-api</artifactId>
+            <artifactId>apigate-customer-info-service-rest-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apigate</groupId>
+            <artifactId>apigate-service-monitoring</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -23,9 +28,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>
-                    <excludeDevtools>false</excludeDevtools>
-                </configuration>-->
                 <executions>
                     <execution>
                         <goals>

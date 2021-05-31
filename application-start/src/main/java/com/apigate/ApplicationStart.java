@@ -9,17 +9,18 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 /**
  * @author Bayu Utomo
  * @date 20/5/2021 10:00 AM
  */
 @SpringBootApplication
-/*TODO enable this later
 @PropertySources({
-        @PropertySource("classpath:database.properties"),
+        //@PropertySource("classpath:database.properties"), TODO enable this later
         @PropertySource("classpath:monitoring.properties")
-})*/
+})
 public class ApplicationStart {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationStart.class);

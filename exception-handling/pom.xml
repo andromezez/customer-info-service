@@ -9,12 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>exception-handling</artifactId>
+    <artifactId>apigate-exception-handling</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>com.apigate</groupId>
-            <artifactId>logging</artifactId>
+            <artifactId>apigate-logging</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>

@@ -9,6 +9,7 @@
 		<module>logging</module>
 		<module>exception-handling</module>
 		<module>apigate-utils</module>
+		<module>service-monitoring</module>
 		<module>dto</module>
 		<module>rest-api</module>
 		<module>application-start</module>

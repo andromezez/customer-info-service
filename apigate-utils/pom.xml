@@ -14,13 +14,13 @@
     <dependencies>
         <dependency>
             <groupId>com.apigate</groupId>
-            <artifactId>config-reader</artifactId>
+            <artifactId>apigate-config-reader</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.apigate</groupId>
-            <artifactId>exception-handling</artifactId>
+            <artifactId>apigate-exception-handling</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>

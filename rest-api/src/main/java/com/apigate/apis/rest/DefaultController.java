@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -88,6 +89,39 @@ public class DefaultController {
 
     @RequestMapping(value="**")
     public ResponseEntity getAnythingelse(HttpServletRequest request) {
+        ResponseEntity<Object> responseEntity = ResponseEntity.ok().build();
+        Logger.registerApiMethodEndpoint(Thread.currentThread().getStackTrace()[1].getMethodName());
+        HTTPRequestLog requestLog = new HTTPRequestLog(Logger.getReqIdFromContext(),"something wrong","something wrong","something wrong");
+
+        HttpServletRequest requestCacheWrapperObject
+                = new ContentCachingRequestWrapper(request);
+        requestCacheWrapperObject.getParameterMap();
+        ServletServerHttpRequest springRequestWrapper = new ServletServerHttpRequest(requestCacheWrapperObject);
+
+        String requestBody = "Error getting the body";
+        InputStream streamBody = null;
+
+        try{
+            streamBody = springRequestWrapper.getBody();
+            if(streamBody!=null){
+                requestBody = IOUtils.toString(streamBody, StandardCharsets.UTF_8 );
+            }
+
+            requestLog = logRequest(Logger.getReqIdFromContext(),requestBody, request);
+
+        }catch (Exception e){
+            ExceptionResponse exceptionResponse = processException(request, e);
+            responseEntity = exceptionResponse.responseEntity;
+            throw exceptionResponse.ex;
+        }
+        finally {
+            logResponse(requestLog, responseEntity);
+        }
+        return responseEntity;
+    }
+
+    @GetMapping("test-error")
+    public ResponseEntity getTestError(HttpServletRequest request) {
         ResponseEntity<Object> responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorInfo(request,new IllegalStateException(RESPONSE_ENTITY_INITIAL_VALUE)));
         Logger.registerApiMethodEndpoint(Thread.currentThread().getStackTrace()[1].getMethodName());
         HTTPRequestLog requestLog = new HTTPRequestLog(Logger.getReqIdFromContext(),"something wrong","something wrong","something wrong");
