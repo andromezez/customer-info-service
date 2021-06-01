@@ -19,7 +19,7 @@ public class ServicesLog  extends AbstractLogger{
 
     @Override
     public void logError(Exception e) {
-        LOGGER.error(parseError(e).toString());
+        LOGGER.error(parseError(e));
     }
     @Override
     public void logInfo(String msg){

@@ -10,16 +10,7 @@ import java.util.Arrays;
  */
 public abstract class AbstractLogger implements Logger{
 
-    protected StringBuilder parseError(Exception e){
-        StringBuilder errors = new StringBuilder();
-        errors.append("Exception : " + e.getClass() + "\n");
-        errors.append("Caused by : " + e.getCause() + "\n");
-        errors.append(e.getMessage() + "\n");
-        for(StackTraceElement stackTraceElement : Arrays.asList(e.getStackTrace())){
-            errors.append("\t"+stackTraceElement.toString()+"\n");
-        }
-        return errors;
-
-        //return ExceptionUtils.getStackTrace(e); TODO this successfully print in one single line stackdriver
+    protected String parseError(Exception e){
+        return ExceptionUtils.getStackTrace(e);
     }
 }
