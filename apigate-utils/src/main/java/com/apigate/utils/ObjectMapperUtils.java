@@ -38,6 +38,9 @@ public class ObjectMapperUtils {
     }
 
     public static String parseObjectToJsonString(Object obj) throws ExhaustedResourceException, JsonProcessingException {
+        if(obj == null){
+            return "";
+        }
         if(obj instanceof String) {
             return (String) obj;
         }
