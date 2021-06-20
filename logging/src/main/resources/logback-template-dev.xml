@@ -111,7 +111,7 @@
         <appender-ref ref="ASYNC_RepositoryLog" />
     </logger>-->
 
-    <logger name="com.apigate.logging.ServicesLog" level="WARN">
+    <logger name="com.apigate.logging.ServicesLog" level="INFO">
         <appender-ref ref="ASYNC_ServicesLog" />
     </logger>
     <!---->
