@@ -17,23 +17,20 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
-        <!--<dependency>TODO enable this later
+        <dependency>
             <groupId>com.apigate</groupId>
-            <artifactId>apigate-blacklist-entities</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>-->
+            <artifactId>apigate-customer-info-service-entities</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.apigate</groupId>
             <artifactId>apigate-exception-handling</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.apigate</groupId>
             <artifactId>apigate-config-reader</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
