@@ -1,4 +1,3 @@
-/*
 package com.apigate.customer_info_service.monitoring;
 
 import com.apigate.utils.ObjectMapperUtils;
@@ -6,11 +5,10 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
-*/
 /**
  * @author Bayu Utomo
  * @date 4/12/2020 10:27 PM
- *//*
+ */
 
 @Component
 public class JsonMapperPoolHealthIndicator implements HealthIndicator {
@@ -26,4 +24,3 @@ public class JsonMapperPoolHealthIndicator implements HealthIndicator {
     }
 
 }
-*/

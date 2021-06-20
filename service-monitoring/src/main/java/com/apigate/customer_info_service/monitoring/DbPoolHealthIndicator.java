@@ -1,4 +1,3 @@
-/*
 package com.apigate.customer_info_service.monitoring;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -7,11 +6,10 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
-*/
 /**
  * @author Bayu Utomo
  * @date 4/12/2020 10:27 PM
- *//*
+ */
 
 @Component
 public class DbPoolHealthIndicator implements HealthIndicator {
@@ -30,4 +28,4 @@ public class DbPoolHealthIndicator implements HealthIndicator {
         return status.build();
     }
 
-}*/
+}

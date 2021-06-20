@@ -18,8 +18,12 @@
         <dependency>
             <groupId>com.apigate</groupId>
             <artifactId>apigate-utils</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apigate</groupId>
+            <artifactId>apigate-customer-info-service-repository</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <build>

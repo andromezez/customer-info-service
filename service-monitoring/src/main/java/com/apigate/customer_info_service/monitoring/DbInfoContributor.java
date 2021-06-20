@@ -1,7 +1,7 @@
-/*
 package com.apigate.customer_info_service.monitoring;
 
 import com.apigate.config.Config;
+import com.apigate.customer_info_service.repository.VersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
-*/
+
 /**
  * @author Bayu Utomo
  * @date 4/12/2020 10:27 PM
- *//*
+ */
 
 @Component
 public class DbInfoContributor implements InfoContributor {
     @Autowired
-    private com.apigate.blacklist_service.repository.cud.VersionRepository versionRepository;
+    private VersionRepository versionRepository;
 
     @Override
     public void contribute(Info.Builder builder) {
@@ -30,4 +30,3 @@ public class DbInfoContributor implements InfoContributor {
         builder.withDetail("database",dbInfo);
     }
 }
-*/
