@@ -39,11 +39,6 @@ spec:
             cpu: 2
             memory: "1.5Gi"
         env:
-        - name: apigate.partnertype.monitoring.url
-          valueFrom:
-            configMapKeyRef:
-              name: customer-info-service-config
-              key: apigate.partnertype.monitoring.url
         - name: CUSTOMER_INFO_APPLICATION_PROFILE
           valueFrom:
             configMapKeyRef:
@@ -59,11 +54,6 @@ spec:
             configMapKeyRef:
               name: customer-info-service-config
               key: apigate.db.schema
-        - name: apigate.partnertype.url
-          valueFrom:
-            configMapKeyRef:
-              name: customer-info-service-config
-              key: apigate.partnertype.url
         - name: apigate.instance.port
           valueFrom:
             configMapKeyRef:

@@ -8,8 +8,6 @@ data:
   apigate.db.url: jdbc:postgresql://10.176.163.3:5432/stg_customer_info_service
   apigate.db.schema: customer_info_service
   apigate.instance.port: "8090"
-  apigate.partnertype.url: http://partner-service.partnerservice.svc.cluster.local:8090/api/v1/service-providers/hubAppId
-  apigate.partnertype.monitoring.url: http://partner-service.partnerservice.svc.cluster.local:8090/api/v1/service-providers
   apigate.db.pool.size: "30"
   apigate.server.threads.max: "30"
   apigate.server.monitoring.port: "8091"
