@@ -1,0 +1,36 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="BayuUtomo (generated)" id="create_masking_table" failOnError="true">
+        <createTable tableName="masking">
+            <column name="client_id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="masking_pk"/>
+            </column>
+            <column name="mno_api_endpoint_id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="masking_pk"/>
+            </column>
+            <column name="json_path" type="VARCHAR(2000)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="masking_pk"/>
+            </column>
+            <column name="mask" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="client_id,mno_api_endpoint_id" baseTableName="masking" constraintName="masking_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="client_id,mno_api_endpoint_id" referencedTableName="routing" validate="true"/>
+        <rollback>
+            <dropTable tableName="masking" />
+            <output  target="STDOUT">rollback drop table masking</output>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

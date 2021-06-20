@@ -1,0 +1,36 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet author="BayuUtomo" id="create_mno_api_endpoint_table" failOnError="true">
+        <createTable tableName="mno_api_endpoint">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="mno_api_endpoint_pk"/>
+            </column>
+            <column name="url" type="VARCHAR(2000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mno_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="url" constraintName="mno_api_endpoint_un" tableName="mno_api_endpoint"/>
+        <addUniqueConstraint columnNames="name" constraintName="mno_api_endpoint_un2" tableName="mno_api_endpoint"/>
+        <addForeignKeyConstraint baseColumnNames="mno_id" baseTableName="mno_api_endpoint" constraintName="mno_api_endpoint_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mno" validate="true"/>
+        <rollback>
+            <dropTable tableName="mno_api_endpoint" />
+            <output  target="STDOUT">rollback drop table mno_api_endpoint</output>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

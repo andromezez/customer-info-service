@@ -1,0 +1,30 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet  id="create_versioning_table"  author="bayu"  failOnError="true">
+        <createTable tableName="version">
+            <column  name="version"  type="varchar(10)">
+                <constraints primaryKey="true" />
+            </column>
+            <column  name="deployed_at"  type="timestamp with time zone"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="version"/>
+            <output  target="STDOUT">rollback drop table version</output>
+        </rollback>
+    </changeSet>
+    <changeSet  id="initialize_version_1.0.0" author="bayu">
+        <sql dbms="postgresql">
+            insert into version (version,DEPLOYED_AT) values ('1.0.0',now())
+        </sql>
+        <comment>initialize the db version to version 1.0.0</comment>
+        <rollback>
+            <delete tableName="version">
+                <where>version='1.0.0'</where>
+            </delete>
+            <output  target="STDOUT">rollback delete record 1.0.0 table version</output>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

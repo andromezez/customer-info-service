@@ -1,0 +1,38 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet author="BayuUtomo" id="create_routing_table" failOnError="true">
+        <createTable tableName="routing">
+            <column name="client_id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="routing_pk"/>
+            </column>
+            <column name="mno_api_endpoint_id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="routing_pk"/>
+            </column>
+            <column name="cache_active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cache_period" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="redis_key" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="mno_api_endpoint_id" baseTableName="routing" constraintName="routing_fk1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mno_api_endpoint" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="client_id" baseTableName="routing" constraintName="routing_fk2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="client" validate="true"/>
+        <rollback>
+            <dropTable tableName="routing" />
+            <output  target="STDOUT">rollback drop table routing</output>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

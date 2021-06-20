@@ -1,0 +1,45 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="BayuUtomo" id="load_initial_celcom_mno_data" failOnError="true">
+        <insert  dbms="postgresql" tableName="mno">
+            <column name="id" value="celcom"/>
+            <column name="name" value="celcom"/>
+            <column name="created_at" value="now()"/>
+            <column name="updated_at" value="now()"/>
+            <column name="username" value="not_initialized"/>
+            <column name="password" value="not_initialized"/>
+            <column name="auth_key" value="not_initialized"/>
+            <column name="token_url" value="https://host:port/token"/>
+        </insert>
+        <rollback>
+            <delete  tableName="mno" />
+            <output  target="STDOUT">rollback delete records from load_initial_celcom_mno_data</output>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="BayuUtomo" id="load_initial_celcom_mno_api_endpoint_data" failOnError="true">
+        <insert  dbms="postgresql" tableName="mno_api_endpoint">
+            <column name="id" value="celcomapi1"/>
+            <column name="url" value="https://celcom.com:8080/oneapi/queryprofile/v1/{userAddress}/subscribertype"/>
+            <column name="created_at" value="now()"/>
+            <column name="updated_at" value="now()"/>
+            <column name="mno_id" value="celcom"/>
+            <column name="name" value="subscribertype"/>
+        </insert>
+        <insert  dbms="postgresql" tableName="mno_api_endpoint">
+            <column name="id" value="celcomapi2"/>
+            <column name="url" value="https://celcom.com:8080/ms-subscriber-profile-query/v1.0/subscribers/{userAddress}/profileretrieve"/>
+            <column name="created_at" value="now()"/>
+            <column name="updated_at" value="now()"/>
+            <column name="mno_id" value="celcom"/>
+            <column name="name" value="profile-retrieve"/>
+        </insert>
+        <rollback>
+            <delete  tableName="mno_api_endpoint" />
+            <output  target="STDOUT">rollback delete records from load_initial_celcom_mno_api_endpoint_data</output>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

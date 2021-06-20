@@ -1,0 +1,13 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <include file="2021-06-03_[changeset-01]_create_mno_table.xml" relativeToChangelogFile="true"/>
+    <include file="2021-06-03_[changeset-02]_create_mno_api_endpoint_table.xml" relativeToChangelogFile="true"/>
+    <include file="2021-06-03_[changeset-03]_create_client_table.xml" relativeToChangelogFile="true"/>
+    <include file="2021-06-03_[changeset-04]_create_routing_table.xml" relativeToChangelogFile="true"/>
+    <include file="2021-06-03_[changeset-05]_create_masking_table.xml" relativeToChangelogFile="true"/>
+    <include file="2021-06-03_[changeset-06]_load_initial_celcom_mno_data.xml" relativeToChangelogFile="true"/>
+    <include file="2021-06-03_[changeset-07]_create_versioning_table.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>
