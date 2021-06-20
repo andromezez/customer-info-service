@@ -1,6 +1,7 @@
 package com.apigate;
 
 import com.apigate.config.Config;
+import com.apigate.customer_info_service.repository.CustomRepositoryImpl;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * @author Bayu Utomo
@@ -18,9 +20,10 @@ import org.springframework.context.annotation.PropertySources;
  */
 @SpringBootApplication
 @PropertySources({
-        //@PropertySource("classpath:database.properties"), TODO enable this later
+        @PropertySource("classpath:database.properties"),
         @PropertySource("classpath:monitoring.properties")
 })
+@EnableJpaRepositories(repositoryBaseClass = CustomRepositoryImpl.class)
 public class ApplicationStart {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationStart.class);
@@ -29,10 +32,10 @@ public class ApplicationStart {
     @Bean
     @DependsOn("application_config_reader")
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> sslConnectorCustomizer() {
-        return (tomcat) -> tomcat.addAdditionalTomcatConnectors(createHealthCheckPort());
+        return (tomcat) -> tomcat.addAdditionalTomcatConnectors(createMonitoringPort());
     }
 
-    private Connector createHealthCheckPort() {
+    private Connector createMonitoringPort() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 
         Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
