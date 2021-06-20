@@ -45,7 +45,7 @@ public class ErrorInfo extends GenericResponseMessageDto{
         resolveFromException(ex);
     }
 
-    public ErrorInfo(){}
+    private ErrorInfo(){}
 
     private void resolveFromException(Exception ex){
         OperationResult.Status status = OperationResult.Status.ERROR;

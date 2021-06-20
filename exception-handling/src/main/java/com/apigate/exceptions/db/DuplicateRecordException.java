@@ -20,6 +20,10 @@ public class DuplicateRecordException extends AbstractException implements Opera
         super(HttpStatus.UNPROCESSABLE_ENTITY,warn.toString());
     }
 
+    public DuplicateRecordException(String reason) {
+        super(HttpStatus.UNPROCESSABLE_ENTITY,warn.toString() + " | " + reason);
+    }
+
     @Override
     public Logger getLogger() {
         return ServicesLog.getInstance();
