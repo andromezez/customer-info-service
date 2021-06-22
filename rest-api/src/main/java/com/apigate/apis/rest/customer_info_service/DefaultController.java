@@ -23,26 +23,6 @@ import java.time.Duration;
 @RequestMapping("/")
 public class DefaultController extends AbstractController{
 
-    /*@RequestMapping(value="**")
-    public ResponseEntity getAnythingelse(HttpServletRequest request) {
-        ResponseEntity responseEntity = null;
-        InitiatedData initiatedData = null;
-
-        try{
-            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, HttpStatus.OK, Thread.currentThread().getStackTrace()[1].getMethodName());
-            responseEntity = initiatedData.responseEntity;
-
-        }catch (Exception e){
-            ExceptionResponse exceptionResponse = processException(request, e);
-            responseEntity = exceptionResponse.responseEntity;
-            throw exceptionResponse.ex;
-        }
-        finally {
-            logResponse(initiatedData.requestLog, responseEntity);
-        }
-        return responseEntity;
-    }*/
-
     @RequestMapping(value="**")
     public ResponseEntity getAnythingelse(HttpServletRequest request) {
         ResponseEntity responseEntity = null;

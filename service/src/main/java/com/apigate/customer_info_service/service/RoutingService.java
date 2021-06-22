@@ -9,10 +9,15 @@ import com.apigate.customer_info_service.repository.MnoApiEndpointRepository;
 import com.apigate.customer_info_service.repository.RoutingRepository;
 import com.apigate.exceptions.db.DuplicateRecordException;
 import com.apigate.exceptions.db.RecordNotFoundException;
+import com.apigate.logging.CommonLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.AntPathMatcher;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -114,7 +119,28 @@ public class RoutingService {
         }
     }
 
+    public boolean findURI(HttpServletRequest request) throws MalformedURLException {
+        boolean isMatch = false;
 
+        var requestURI = request.getRequestURI();
+        CommonLog.getInstance().logInfo("incoming request URI : " + requestURI);
+
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
+
+        for(var endpoint : mnoApiEndpointRepository.findAll()){
+            CommonLog.getInstance().logInfo("operator URL from DB : " + endpoint.getUrl());
+            URL url = new URL(endpoint.getUrl());
+            String path = url.getPath();
+            CommonLog.getInstance().logInfo("operator URI path from DB : " + path);
+
+            isMatch = antPathMatcher.match(path,requestURI);
+            if(isMatch){
+                CommonLog.getInstance().logInfo("found match url from db : " + endpoint.getUrl());
+                break;
+            }
+        }
+        return isMatch;
+    }
 
     public void createCache(String key, String value, int secondsExpire){
         redisTemplate.opsForValue().set(key, value);
