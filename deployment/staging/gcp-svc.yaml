@@ -15,6 +15,6 @@ spec:
   ports:
     - protocol: TCP
       name: http-customer-info-service
-      port: 8091
-      targetPort: 8091
+      port: 8090
+      targetPort: 8090
   type: LoadBalancer
