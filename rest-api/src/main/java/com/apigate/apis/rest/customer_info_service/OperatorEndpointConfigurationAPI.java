@@ -1,19 +1,13 @@
 package com.apigate.apis.rest.customer_info_service;
 
-import com.apigate.customer_info_service.dto.httprequestbody.operator.MnoEntryReqDto;
 import com.apigate.customer_info_service.dto.httprequestbody.operator_endpoint.MnoApiEndpointEntryReqDto;
-import com.apigate.customer_info_service.dto.httpresponsebody.operator.MnoEntryDto;
-import com.apigate.customer_info_service.dto.httpresponsebody.operator.OperatorResDto;
 import com.apigate.customer_info_service.dto.httpresponsebody.operator_endpoint.EndpointResDto;
 import com.apigate.customer_info_service.dto.httpresponsebody.operator_endpoint.MnoApiEndpointEntryDto;
 import com.apigate.customer_info_service.dto.validator.ValidationSequence;
 import com.apigate.customer_info_service.service.OperatorEndpointService;
 import com.apigate.exceptions.HTTPResponseBody.OperationResult;
 import com.apigate.exceptions.business.InputValidationException;
-import com.apigate.exceptions.internal.ExhaustedResourceException;
 import com.apigate.logging.HTTPRequestLog;
-import com.apigate.utils.ObjectMapperUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

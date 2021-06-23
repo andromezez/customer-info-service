@@ -1,4 +1,4 @@
-package com.apigate.utils;
+package com.apigate.utils.json_processor;
 
 import org.apache.commons.pool2.impl.AbandonedConfig;
 

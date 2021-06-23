@@ -1,6 +1,6 @@
 package com.apigate.customer_info_service.monitoring;
 
-import com.apigate.utils.ObjectMapperUtils;
+import com.apigate.utils.json_processor.ObjectMapperUtils;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;

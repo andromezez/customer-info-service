@@ -5,7 +5,7 @@ import com.apigate.blacklist_service.logging.CommonLog;
 import com.apigate.blacklist_service.service.PartnerTypeHTTPResponse;
 import com.apigate.config.CommonHeaders;
 import com.apigate.config.Config;
-import com.apigate.utils.ObjectMapperUtils;
+import com.apigate.utils.json_processor.ObjectMapperUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;

@@ -6,7 +6,7 @@ import com.apigate.exceptions.internal.SystemErrorException;
 import com.apigate.logging.HTTPRequestLog;
 import com.apigate.logging.HTTPResponseLog;
 import com.apigate.logging.Logger;
-import com.apigate.utils.ObjectMapperUtils;
+import com.apigate.utils.json_processor.ObjectMapperUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

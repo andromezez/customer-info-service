@@ -1,4 +1,4 @@
-package com.apigate.utils;
+package com.apigate.utils.json_processor;
 
 import com.apigate.exceptions.internal.ExhaustedResourceException;
 import com.apigate.config.Config;
