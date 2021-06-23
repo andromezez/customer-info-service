@@ -1,7 +1,11 @@
 package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.apis.rest.util.HTTPUtils;
+import com.apigate.customer_info_service.service.RoutingService;
 import com.apigate.exceptions.internal.SystemErrorException;
+import com.apigate.logging.ServicesLog;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.TextStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -23,14 +27,27 @@ import java.time.Duration;
 @RequestMapping("/")
 public class DefaultController extends AbstractController{
 
+    @Autowired
+    private RoutingService routingService;
+
     @RequestMapping(value="**")
-    public ResponseEntity getAnythingelse(HttpServletRequest request) {
+    public ResponseEntity getAnythingelse(@RequestHeader(name = "application_id", required = false) String partnerId, HttpServletRequest request) {
         ResponseEntity responseEntity = null;
         InitiatedData initiatedData = null;
 
         try{
             initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, HttpStatus.OK, Thread.currentThread().getStackTrace()[1].getMethodName());
             responseEntity = initiatedData.responseEntity;
+
+            if(StringUtils.isNotBlank(partnerId)){
+                var routing = routingService.findRouting(request, partnerId);
+                if(routing.isPresent()){
+
+                }else{
+                    ServicesLog.getInstance().logInfo("Can't find routing for partnerId " + partnerId
+                            + " and URI " + request.getRequestURI() + " , under " + RoutingService.LOCK_ON_OPERATOR + " operator.");
+                }
+            }
 
         }catch (Exception e){
             ExceptionResponse exceptionResponse = processException(request, e);

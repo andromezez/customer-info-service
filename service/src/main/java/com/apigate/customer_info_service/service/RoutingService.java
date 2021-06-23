@@ -2,11 +2,13 @@ package com.apigate.customer_info_service.service;
 
 import com.apigate.customer_info_service.dto.httprequestbody.routing.UpdateRoutingEntryReqDto;
 import com.apigate.customer_info_service.dto.httpresponsebody.routing.RoutingEntryDto;
+import com.apigate.customer_info_service.entities.MnoApiEndpoint;
 import com.apigate.customer_info_service.entities.Routing;
 import com.apigate.customer_info_service.entities.RoutingPK;
 import com.apigate.customer_info_service.repository.ClientRepository;
 import com.apigate.customer_info_service.repository.MnoApiEndpointRepository;
 import com.apigate.customer_info_service.repository.RoutingRepository;
+import com.apigate.exceptions.business.BusinessValidationException;
 import com.apigate.exceptions.db.DuplicateRecordException;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import com.apigate.logging.CommonLog;
@@ -22,6 +24,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Bayu Utomo
@@ -40,6 +43,8 @@ public class RoutingService {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    public static final String LOCK_ON_OPERATOR = "celcom";
 
     private List<RoutingEntryDto> transformToDto(List<Routing> routingListDB){
         var routingsDto = new ArrayList<RoutingEntryDto>(1);
@@ -68,7 +73,7 @@ public class RoutingService {
     }
 
     public List<RoutingEntryDto> getRoutingBy(String clientId, String operatorId){
-        var routingListDB = routingRepository.findBy(clientId,operatorId);
+        var routingListDB = routingRepository.findByClientIdAndMnoId(clientId,operatorId);
         return transformToDto(routingListDB);
     }
 
@@ -119,27 +124,48 @@ public class RoutingService {
         }
     }
 
-    public boolean findURI(HttpServletRequest request) throws MalformedURLException {
-        boolean isMatch = false;
+    private Optional<MnoApiEndpoint> findURI(HttpServletRequest request) throws MalformedURLException {
+
+        MnoApiEndpoint foundEndpoint = null;
 
         var requestURI = request.getRequestURI();
         CommonLog.getInstance().logInfo("incoming request URI : " + requestURI);
 
         AntPathMatcher antPathMatcher = new AntPathMatcher();
 
-        for(var endpoint : mnoApiEndpointRepository.findAll()){
+        for(var endpoint : mnoApiEndpointRepository.findByMnoId(LOCK_ON_OPERATOR)){
             CommonLog.getInstance().logInfo("operator URL from DB : " + endpoint.getUrl());
             URL url = new URL(endpoint.getUrl());
             String path = url.getPath();
             CommonLog.getInstance().logInfo("operator URI path from DB : " + path);
 
-            isMatch = antPathMatcher.match(path,requestURI);
-            if(isMatch){
+            if(antPathMatcher.match(path,requestURI)){
                 CommonLog.getInstance().logInfo("found match url from db : " + endpoint.getUrl());
+                foundEndpoint = endpoint;
                 break;
             }
         }
-        return isMatch;
+
+        return Optional.ofNullable(foundEndpoint);
+    }
+
+    public Optional<Routing> findRouting(HttpServletRequest request, String partnerId) throws MalformedURLException {
+        var endpoint = findURI(request);
+        if(endpoint.isPresent()){
+            var routingList = routingRepository.findByEndpointIdAndClientPartnerId(endpoint.get().getId(), partnerId);
+            if(routingList.isEmpty()){
+                return Optional.empty();
+            }else{
+                if(routingList.size() > 1){
+                    throw new BusinessValidationException("Internal data error. Found multiple routing for URI " + request.getRequestURI() +
+                            "and partnerId " + partnerId);
+                }else{
+                    return Optional.of(routingList.get(0));
+                }
+            }
+        }else{
+            return Optional.empty();
+        }
     }
 
     public void createCache(String key, String value, int secondsExpire){
