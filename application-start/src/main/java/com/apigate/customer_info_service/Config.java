@@ -34,4 +34,9 @@ public class Config {
             com.apigate.config.Config.setServerMonitoringPort(value);
         }
     }
+
+    @Value("${apigate.http.client.timeout}")
+    public void setHttpClientTimeout(int value) {
+        com.apigate.config.Config.setApigateHttpClientTimeout(value);
+    }
 }

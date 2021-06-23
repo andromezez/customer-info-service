@@ -11,9 +11,28 @@ public class Config {
     public static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss Z";
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN);
     private static String INSTANCE_ID;
-    private static int APIGATE_SERVER_THREADS_MAX;
+    private static int APIGATE_SERVER_THREADS_MAX=100;
     private static int SERVER_MONITORING_PORT = 0;
     private static int SERVER_MONITORING_MAX_THREAD = 0;
+    private static int APIGATE_HTTP_CLIENT_TIMEOUT = 5; //in seconds
+
+    /**
+     * Gets apigate http client timeout.
+     *
+     * @return the apigate http client timeout. In seconds
+     */
+    public static int getApigateHttpClientTimeout() {
+        return APIGATE_HTTP_CLIENT_TIMEOUT;
+    }
+
+    /**
+     * Sets apigate http client timeout.
+     *
+     * @param apigateHttpClientTimeout the apigate http client timeout. In seconds
+     */
+    public static void setApigateHttpClientTimeout(int apigateHttpClientTimeout) {
+        APIGATE_HTTP_CLIENT_TIMEOUT = apigateHttpClientTimeout;
+    }
 
     public static void setInstanceId(String instanceId) {
         INSTANCE_ID = instanceId;
