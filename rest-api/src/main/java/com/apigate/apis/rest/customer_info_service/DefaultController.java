@@ -1,14 +1,17 @@
 package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.apis.rest.util.HTTPUtils;
+import com.apigate.customer_info_service.service.CacheService;
 import com.apigate.customer_info_service.service.RoutingService;
+import com.apigate.exceptions.business.BusinessValidationException;
 import com.apigate.exceptions.internal.SystemErrorException;
 import com.apigate.logging.ServicesLog;
+import com.apigate.utils.httpclient.HttpClientUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.TextStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URL;
 import java.time.Duration;
 
 /**
@@ -30,8 +34,11 @@ public class DefaultController extends AbstractController{
     @Autowired
     private RoutingService routingService;
 
+    @Autowired
+    private CacheService cacheService;
+
     @RequestMapping(value="**")
-    public ResponseEntity getAnythingelse(@RequestHeader(name = "application_id", required = false) String partnerId, HttpServletRequest request) {
+    public ResponseEntity getAnythingElse(@RequestHeader(name = "application_id", required = false) String partnerId, HttpServletRequest request) {
         ResponseEntity responseEntity = null;
         InitiatedData initiatedData = null;
 
@@ -42,13 +49,46 @@ public class DefaultController extends AbstractController{
             if(StringUtils.isNotBlank(partnerId)){
                 var routing = routingService.findRouting(request, partnerId);
                 if(routing.isPresent()){
+                    String cacheResponse = null;
+                    try{
+                        cacheResponse = cacheService.getFromCache(routing.get().getRedisKey());
+                    }catch (Exception e){
+                        ServicesLog.getInstance().logError(e);
+                    }
 
+                    if(StringUtils.isNotBlank(cacheResponse)){
+                        ServicesLog.getInstance().logInfo("Cache is found");
+                        responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(cacheResponse);
+                    }else{
+                        ServicesLog.getInstance().logInfo("Cache not found. Cache is " + cacheResponse);
+                        var httpResponse = HttpClientUtils.executeGetRequest(HttpClientUtils.subtitutePath(new URL(routing.get().getMnoApiEndpoint().getUrl()), request));
+                        if(httpResponse.isResponseComplete()){
+                            try{
+                                cacheService.createCache(routing.get(),httpResponse.getBody());
+                            }catch (Exception e){
+                                ServicesLog.getInstance().logError(e);
+                            }
+                            responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(httpResponse.getBody());
+                        }else{
+                            String errorMessage = "Operator endpoint " + routing.get().getMnoApiEndpoint().getUrl()
+                                    + " doesn't return proper response.";
+                            String errorDetails = errorMessage
+                                    + "\n    response code : " + httpResponse.getCode()
+                                    + "\n    reason phrase : " + httpResponse.getReasonPhrase()
+                                    + "\n    response body : " + httpResponse.getBody()
+                                    + "\n    response headers : " + HttpClientUtils.HttpResponse.toString(httpResponse.getHeaders());
+                            var errorForLog = new BusinessValidationException(errorDetails);
+                            ServicesLog.getInstance().logError(errorForLog);
+
+                            var errorForClient = new BusinessValidationException(errorMessage);
+                            throw errorForClient;
+                        }
+                    }
                 }else{
-                    ServicesLog.getInstance().logInfo("Can't find routing for partnerId " + partnerId
+                    throw new BusinessValidationException("Can't find routing for partnerId " + partnerId
                             + " and URI " + request.getRequestURI() + " , under " + RoutingService.LOCK_ON_OPERATOR + " operator.");
                 }
             }
-
         }catch (Exception e){
             ExceptionResponse exceptionResponse = processException(request, e);
             responseEntity = exceptionResponse.responseEntity;
