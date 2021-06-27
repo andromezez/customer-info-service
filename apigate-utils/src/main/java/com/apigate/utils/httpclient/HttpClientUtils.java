@@ -1,27 +1,20 @@
 package com.apigate.utils.httpclient;
 
-import com.apigate.config.Config;
-import org.apache.hc.client5.http.ConnectionKeepAliveStrategy;
+import com.apigate.logging.ServicesLog;
+import lombok.Data;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.TextStringBuilder;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.core5.http.HeaderElement;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpResponse;
-import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.message.BasicHeaderElementIterator;
-import org.apache.hc.core5.http.protocol.HttpContext;
-import org.apache.hc.core5.util.TimeValue;
-import org.apache.hc.core5.util.Timeout;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Bayu Utomo
@@ -29,59 +22,69 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpClientUtils {
 
-    private static final PoolingHttpClientConnectionManager POOLING_CONN_MANAGER;
+    @Data
+    public static class HttpResponse {
+        private int code = 0;
+        private String body, reasonPhrase;
+        private Header[] headers;
 
-    private static final ConnectionKeepAliveStrategy CONNECTION_KEEP_ALIVE_STRATEGY = (response, context) -> TimeValue.ofSeconds(Config.getApigateHttpClientTimeout());
+        public boolean isResponseComplete() {
+            if ((code > 0) && StringUtils.isNotBlank(body) && (headers != null)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
-    static {
-        /*POOLING_CONN_MANAGER = new PoolingHttpClientConnectionManager();
-        POOLING_CONN_MANAGER.setMaxTotal(Config.getApigateServerThreadsMax());
-        POOLING_CONN_MANAGER.setDefaultMaxPerRoute(4);
-        POOLING_CONN_MANAGER.setDefaultSocketConfig(SocketConfig.custom().setSoTimeout(Config.getApigateHttpClientTimeout(), TimeUnit.SECONDS).build());
-        Use builder. It has more access to properties.
-        */
-
-        POOLING_CONN_MANAGER = PoolingHttpClientConnectionManagerBuilder.create()
-                .setMaxConnTotal(Config.getApigateServerThreadsMax())
-                .setMaxConnPerRoute(4)
-                .setDefaultSocketConfig(SocketConfig.custom().setSoTimeout(Config.getApigateHttpClientTimeout(), TimeUnit.SECONDS).build())
-                .setConnectionTimeToLive(Timeout.ofSeconds(Config.getApigateHttpClientTimeout()))
-                .build();
+        public static String toString(Header[] headers){
+            TextStringBuilder result = new TextStringBuilder();
+            return result.append("[ ")
+                    .appendWithSeparators(headers," , ")
+                    .append(" ]")
+                    .toString();
+        }
     }
 
     private HttpClientUtils(){}
 
-    public static PoolingHttpClientConnectionManager getPoolingConnManager() {
-        return POOLING_CONN_MANAGER;
-    }
-
-    public static HttpEntity executeGetRequest(String endpoint) throws IOException {
+    public static HttpResponse executeGetRequest(String endpoint) throws IOException {
         HttpGet httpGet = new HttpGet(endpoint);
-        HttpEntity response;
+        HttpResponse result = new HttpResponse();
 
-        POOLING_CONN_MANAGER.closeExpired();
-        POOLING_CONN_MANAGER.closeIdle(TimeValue.ofSeconds(Config.getApigateHttpClientTimeout()* 5L));
+        //HttpClientConnectionManagerPool.getPoolingConnManager().closeExpired();
+        //HttpClientConnectionManagerPool.getPoolingConnManager().closeIdle(TimeValue.ofMinutes(3));
 
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(Timeout.ofSeconds(Config.getApigateHttpClientTimeout()))
-                .setConnectionRequestTimeout(Timeout.ofSeconds(Config.getApigateHttpClientTimeout()))
-                .setResponseTimeout(Timeout.ofSeconds(Config.getApigateHttpClientTimeout()))
-                .setConnectionKeepAlive(TimeValue.ofSeconds(Config.getApigateHttpClientTimeout()))
-                .build();
+        //var httpClient = HttpClientPool.getHttpClientInstance();
 
-        try (CloseableHttpClient httpclient = HttpClients.custom()
-                .setKeepAliveStrategy(CONNECTION_KEEP_ALIVE_STRATEGY)
-                .setConnectionManager(POOLING_CONN_MANAGER)
-                .setDefaultRequestConfig(requestConfig)
-                .build()) {
+        ServicesLog.getInstance().logInfo("Sending http request to " + endpoint);
+        try (CloseableHttpResponse httpResponse = HttpClientSingleton.getInstance().execute(httpGet)) {
+            ServicesLog.getInstance().logInfo("Get http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase());
 
-            try (CloseableHttpResponse response1 = httpclient.execute(httpGet)) {
-                System.out.println(response1.getCode() + " " + response1.getReasonPhrase());
-                response = response1.getEntity();
-                EntityUtils.consume(response);
-            }
+            HttpEntity entity = httpResponse.getEntity();
+            result.setBody(IOUtils.toString(entity.getContent(), StandardCharsets.UTF_8.name()));
+
+            result.setCode(httpResponse.getCode());
+            result.setReasonPhrase(httpResponse.getReasonPhrase());
+            result.setHeaders(httpResponse.getHeaders());
+
+            // do something useful with the response body
+            // and ensure it is fully consumed
+            EntityUtils.consume(entity);
         }
 
-        return response;
+        //HttpClientPool.returnToPool(httpClient);
+
+        return result;
+    }
+
+    public static String subtitutePath(URL originalUrl, HttpServletRequest replaceWith){
+        StringBuilder result = new StringBuilder();
+        return result.append(originalUrl.getProtocol())
+                .append("://")
+                .append(originalUrl.getHost())
+                .append(":")
+                .append(originalUrl.getPort())
+                .append(replaceWith.getRequestURI())
+                .toString();
     }
 }
