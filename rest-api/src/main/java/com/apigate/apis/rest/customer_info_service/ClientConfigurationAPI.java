@@ -32,7 +32,7 @@ public class ClientConfigurationAPI extends AbstractController{
     private ClientService clientService;
 
     @GetMapping
-    public ResponseEntity<Object> retrieveList(@RequestParam(name = "partner_id", required = false) String partnerId, HttpServletRequest request){
+    public ResponseEntity<Object> retrieveList(@RequestHeader(name = "Partner-Id", required = false) String partnerId, HttpServletRequest request){
         InitiatedData initiatedData = initiateDataAndLogRequest("",request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
@@ -87,9 +87,9 @@ public class ClientConfigurationAPI extends AbstractController{
         return responseEntity;
     }
 
-    @PutMapping("{clientId}")
+    @PutMapping("{id}")
     @Validated(ValidationSequence.class)
-    public ResponseEntity<Object> updateSingle(@PathVariable("clientId") String id, @RequestBody(required = false) @Valid UpdateClientEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
+    public ResponseEntity<Object> updateSingle(@PathVariable("id") String id, @RequestBody(required = false) @Valid UpdateClientEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
         InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;

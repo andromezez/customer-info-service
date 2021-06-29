@@ -23,7 +23,7 @@ import javax.validation.Valid;
  * @date 12/6/2021 7:32 PM
  */
 @RestController
-@RequestMapping("/customer-info-service/v1/config/apis")
+@RequestMapping("/customer-info-service/v1/config/endpoints")
 @Validated
 public class OperatorEndpointConfigurationAPI extends AbstractController{
 
@@ -32,9 +32,9 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
 
 
 
-    @PutMapping("{apiId}")
+    @PutMapping("{id}")
     @Validated(ValidationSequence.class)
-    public ResponseEntity<Object> updateSingle(@PathVariable("apiId") String apiId, @RequestBody(required = false) @Valid MnoApiEndpointEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
+    public ResponseEntity<Object> updateSingle(@PathVariable("id") String id, @RequestBody(required = false) @Valid MnoApiEndpointEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
 
         InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
@@ -47,7 +47,7 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
                 throw new InputValidationException(bindingResult.getFieldError().getDefaultMessage());
             }
 
-            MnoApiEndpointEntryDto mnoEntryDto = operatorEndpointService.update(apiId, requestBody);
+            MnoApiEndpointEntryDto mnoEntryDto = operatorEndpointService.update(id, requestBody);
             var endpointResDto = new EndpointResDto();
             endpointResDto.setEndpoint(mnoEntryDto);
             endpointResDto.getOperationResult().setOperationResult(request, OperationResult.Status.SUCCESS, "", "Endpoint Successfully Updated");

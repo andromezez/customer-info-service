@@ -32,7 +32,7 @@ public class OperatorConfigurationAPI extends AbstractController{
     private OperatorService operatorService;
 
     @GetMapping
-    public ResponseEntity<Object> retrieveList(@RequestParam(name = "name", required = false) String name, HttpServletRequest request){
+    public ResponseEntity<Object> retrieveList(@RequestHeader(name = "Name", required = false) String name, HttpServletRequest request){
         InitiatedData initiatedData = initiateDataAndLogRequest("",request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
