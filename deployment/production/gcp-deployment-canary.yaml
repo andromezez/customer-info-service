@@ -89,3 +89,18 @@ spec:
             configMapKeyRef:
               name: customer-info-service-config
               key: apigate.server.monitoring.threads.max
+        - name: apigate.redis.host
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.redis.host
+        - name: apigate.redis.port
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.redis.port
+        - name: apigate.redis.password
+          valueFrom:
+            secretKeyRef:
+              name: customer-info-service-secret
+              key: apigate.redis.password

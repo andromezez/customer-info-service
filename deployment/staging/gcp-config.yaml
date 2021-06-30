@@ -12,3 +12,5 @@ data:
   apigate.server.threads.max: "30"
   apigate.server.monitoring.port: "8091"
   apigate.server.monitoring.threads.max: "10"
+  apigate.redis.host: 10.176.162.12
+  apigate.redis.port: "6379"
