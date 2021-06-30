@@ -11,19 +11,19 @@ spec:
         host: customer-info-service
         subset: v1
         port:
-          number: 8091
+          number: 8090
       weight: 80
     - destination:
         host: customer-info-service
         subset: baseline
         port:
-          number: 8091
+          number: 8090
       weight: 10
     - destination:
         host: customer-info-service
         subset: canary
         port:
-          number: 8091
+          number: 8090
       weight: 10
 ---
 apiVersion: networking.istio.io/v1alpha3

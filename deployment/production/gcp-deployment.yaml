@@ -24,6 +24,7 @@ spec:
       - name: customer-info-service
         image: 'gcr.io/project-apigate-prod-hub/customer-info-service:${trigger[''tag'']}'
         ports:
+        - containerPort: 8090
         - containerPort: 8091
         readinessProbe:
           httpGet:
