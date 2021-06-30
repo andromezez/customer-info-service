@@ -17,4 +17,8 @@ spec:
       name: http-customer-info-service
       port: 8090
       targetPort: 8090
+    - protocol: TCP
+      name: http-customer-info-service-healthcheck
+      port: 8091
+      targetPort: 8091
   type: LoadBalancer
