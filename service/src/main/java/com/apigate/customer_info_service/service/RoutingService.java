@@ -41,9 +41,6 @@ public class RoutingService {
     @Autowired
     private ClientRepository clientRepository;
 
-    @Autowired
-    private StringRedisTemplate redisTemplate;
-
     public static final String LOCK_ON_OPERATOR = "celcom";
 
     private List<RoutingEntryDto> transformToDto(List<Routing> routingListDB){
@@ -167,11 +164,5 @@ public class RoutingService {
             return Optional.empty();
         }
     }
-
-    public void createCache(String key, String value, int secondsExpire){
-        redisTemplate.opsForValue().set(key, value);
-        redisTemplate.expire(key, Duration.ofSeconds(secondsExpire));
-    }
-
 
 }
