@@ -51,7 +51,12 @@ public class DefaultController extends AbstractController{
                 if(routing.isPresent()){
                     String cacheResponse = null;
                     try{
-                        cacheResponse = cacheService.getFromCache(routing.get().getRedisKey());
+                        if(routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
+                            ServicesLog.getInstance().logInfo("Cache is on");
+                            cacheResponse = cacheService.getFromCache(routing.get().getRedisKey());
+                        }else{
+                            ServicesLog.getInstance().logInfo("Cache is off");
+                        }
                     }catch (Exception e){
                         ServicesLog.getInstance().logError(e);
                     }
