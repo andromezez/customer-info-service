@@ -5,7 +5,7 @@ metadata:
   namespace: customer-info
 data:
   CUSTOMER_INFO_APPLICATION_PROFILE: stag
-  apigate.db.url: jdbc:postgresql://10.176.163.3:5432/stg_customer_info_service
+  apigate.db.url: jdbc:postgresql://10.176.164.3:5432/customer_info_service_stg
   apigate.db.schema: customer_info_service
   apigate.instance.port: "8090"
   apigate.db.pool.size: "30"

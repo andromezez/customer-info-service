@@ -5,7 +5,7 @@ metadata:
   namespace: customer-info
 data:
   CUSTOMER_INFO_APPLICATION_PROFILE: prod
-  apigate.db.url: jdbc:postgresql://10.69.129.7:5432/prod_customer_info_service
+  apigate.db.url: jdbc:postgresql://10.69.129.17:5432/customer_info_service_prod
   apigate.db.schema: customer_info_service
   apigate.instance.port: "8090"
   apigate.db.pool.size: "30"
