@@ -41,6 +41,9 @@ public class RoutingService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private CacheService cacheService;
+
     public static final String LOCK_ON_OPERATOR = "celcom";
 
     private List<RoutingEntryDto> transformToDto(List<Routing> routingListDB){
@@ -80,6 +83,8 @@ public class RoutingService {
         var routingDB = routingRepository.findById(routingPK);
 
         if(routingDB.isPresent()){
+            boolean isActiveBefore = routingDB.get().isCacheActive();
+
             routingDB.get().setCachePeriod(updateRoutingEntryReqDto.getCachePeriod());
             routingDB.get().setCacheActive(updateRoutingEntryReqDto.isCacheActive());
             routingDB.get().setUpdatedAt(ZonedDateTime.now());
@@ -88,6 +93,10 @@ public class RoutingService {
 
             RoutingEntryDto result = new RoutingEntryDto();
             result.parseFrom(routingDBAfterUpdate);
+
+            if ((!routingDBAfterUpdate.isCacheActive()) && (isActiveBefore)) {
+                cacheService.removeCache(routingDBAfterUpdate.getRedisKey());
+            }
 
             return result;
         }else{
