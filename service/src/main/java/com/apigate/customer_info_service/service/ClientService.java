@@ -24,6 +24,9 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private CacheService cacheService;
+
     private List<ClientEntryDto> fillClientsDto(List<Client> clientList){
         var result = new ArrayList<ClientEntryDto>(1);
         for(Client client : clientList) {
@@ -70,6 +73,9 @@ public class ClientService {
         if(clientRepository.findByIdNotAndPartnerIdContainingIgnoreCase(id, updateClientEntryReqDto.getPartnerId()).isEmpty()){
             var existingClientDB = clientRepository.findById(id);
             if(existingClientDB.isPresent()){
+
+                boolean isActiveBefore = existingClientDB.get().isCacheActive();
+
                 existingClientDB.get().setPartnerId(updateClientEntryReqDto.getPartnerId());
                 existingClientDB.get().setCacheActive(updateClientEntryReqDto.isCacheActive());
                 existingClientDB.get().setUpdatedAt(ZonedDateTime.now());
@@ -78,6 +84,12 @@ public class ClientService {
 
                 ClientEntryDto result = new ClientEntryDto();
                 result.parseFrom(updatedClient);
+
+                if ((!updatedClient.isCacheActive()) && (isActiveBefore)) {
+                    for(var routing : updatedClient.getRoutingCollection()){
+                        cacheService.removeCache(routing.getRedisKey());
+                    }
+                }
 
                 return result;
             }else{

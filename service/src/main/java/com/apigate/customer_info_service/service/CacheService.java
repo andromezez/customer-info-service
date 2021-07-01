@@ -29,4 +29,8 @@ public class CacheService {
     public String getFromCache(String key){
         return redisTemplate.opsForValue().get(key);
     }
+
+    public boolean removeCache(String key){
+        return redisTemplate.delete(key);
+    }
 }
