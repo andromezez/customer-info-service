@@ -40,10 +40,10 @@ public class CommonLogActivities extends HttpFilter {
             printing the header for all incoming request is better for debugging since the main function is
             handling routing of request response
             if(httpRequestLogger.isDebugEnabled()){*/
-            StringBuilder headersInfo = new StringBuilder("Request Headers :");
+            StringBuilder headersInfo = new StringBuilder("Request Headers :\n");
                 request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
                     request.getHeaders(headerName).asIterator().forEachRemaining(value -> {
-                        headersInfo.append("\n    "+headerName+"' = " + value);
+                        headersInfo.append("    "+headerName+"' = " + value + "\n");
                     });
                 });
             httpRequestLogger.info(headersInfo.toString());
