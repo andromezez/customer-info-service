@@ -1,6 +1,7 @@
 package com.apigate.customer_info_service.service;
 
 import com.apigate.customer_info_service.entities.Routing;
+import com.apigate.logging.ServicesLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,12 @@ public class CacheService {
     private StringRedisTemplate redisTemplate;
 
     public void createCache(String key, String value, int expireInSeconds){
-        redisTemplate.opsForValue().set(key, value);
-        redisTemplate.expire(key, Duration.ofSeconds(expireInSeconds));
+        try{
+            redisTemplate.opsForValue().set(key, value);
+            redisTemplate.expire(key, Duration.ofSeconds(expireInSeconds));
+        }catch (Exception e){
+            ServicesLog.getInstance().logError(e);
+        }
     }
 
     public void createCache(Routing routing, String value){
@@ -27,10 +32,33 @@ public class CacheService {
     }
 
     public String getFromCache(String key){
-        return redisTemplate.opsForValue().get(key);
+        try{
+            return redisTemplate.opsForValue().get(key);
+        }catch (Exception e){
+            ServicesLog.getInstance().logError(e);
+        }
+        return "";
     }
 
     public boolean removeCache(String key){
-        return redisTemplate.delete(key);
+        try{
+            return redisTemplate.delete(key);
+        }catch (Exception e){
+            ServicesLog.getInstance().logError(e);
+        }
+        return false;
+    }
+
+    public Duration getRemainingTTL(String key){
+        try{
+            long remainingTTL = redisTemplate.getExpire(key);
+            if(remainingTTL < 1) {
+                return Duration.ZERO;
+            }
+            return Duration.ofSeconds(remainingTTL);
+        }catch (Exception e){
+            ServicesLog.getInstance().logError(e);
+        }
+        return Duration.ZERO;
     }
 }
