@@ -1,5 +1,6 @@
 package com.apigate.config;
 
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -15,6 +16,8 @@ public class Config {
     private static int SERVER_MONITORING_PORT = 0;
     private static int SERVER_MONITORING_MAX_THREAD = 0;
     private static int APIGATE_HTTP_CLIENT_TIMEOUT = 5; //in seconds
+
+    private static Duration TTL_LEFT_BEFORE_REFRESH_TOKEN = Duration.ofSeconds(10);
 
     /**
      * Gets apigate http client timeout.
@@ -66,5 +69,13 @@ public class Config {
 
     public static void setServerMonitoringMaxThread(int serverMonitoringMaxThread) {
         SERVER_MONITORING_MAX_THREAD = serverMonitoringMaxThread;
+    }
+
+    public static Duration getTtlLeftBeforeRefreshToken() {
+        return TTL_LEFT_BEFORE_REFRESH_TOKEN;
+    }
+
+    public static void setTtlLeftBeforeRefreshToken(Duration ttlLeftBeforeRefreshToken) {
+        TTL_LEFT_BEFORE_REFRESH_TOKEN = ttlLeftBeforeRefreshToken;
     }
 }

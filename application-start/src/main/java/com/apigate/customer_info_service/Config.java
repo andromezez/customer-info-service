@@ -3,6 +3,8 @@ package com.apigate.customer_info_service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
+import java.time.Duration;
+
 /**
  * @author Bayu Utomo
  * @date 20/5/2021 10:05 AM
@@ -38,5 +40,11 @@ public class Config {
     @Value("${apigate.http.client.timeout}")
     public void setHttpClientTimeout(int value) {
         com.apigate.config.Config.setApigateHttpClientTimeout(value);
+    }
+
+
+    @Value("${apigate.cust-info.operator.token.refresh.ttl}")
+    public void setTtlTokenRefresh(int value) {
+        com.apigate.config.Config.setTtlLeftBeforeRefreshToken(Duration.ofSeconds(value));
     }
 }
