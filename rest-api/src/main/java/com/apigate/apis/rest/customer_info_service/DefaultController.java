@@ -8,6 +8,7 @@ import com.apigate.exceptions.internal.SystemErrorException;
 import com.apigate.logging.ServicesLog;
 import com.apigate.utils.httpclient.HttpClientUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -63,7 +64,9 @@ public class DefaultController extends AbstractController{
                         responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(cacheResponse);
                     }else{
                         ServicesLog.getInstance().logInfo("Cache not found. Cache is " + cacheResponse);
-                        var httpResponse = HttpClientUtils.executeGetRequest(HttpClientUtils.subtitutePath(new URL(routing.get().getMnoApiEndpoint().getUrl()), request));
+                        String endpoint = HttpClientUtils.subtitutePath(new URL(routing.get().getMnoApiEndpoint().getUrl()), request);
+                        HttpGet httpGet = new HttpGet(endpoint);
+                        var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
                             try{
                                 cacheService.createCache(routing.get(),httpResponse.getBody());
