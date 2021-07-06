@@ -12,7 +12,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
  * @author Bayu Utomo
@@ -24,6 +30,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         @PropertySource("classpath:monitoring.properties")
 })
 @EnableJpaRepositories(repositoryBaseClass = CustomRepositoryImpl.class)
+@EnableAsync
+@EnableScheduling
 public class ApplicationStart {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationStart.class);
@@ -47,5 +55,25 @@ public class ApplicationStart {
             throw new IllegalStateException(
                     "can't access keystore: [" + "keystore" + "] or truststore: [" + "keystore" + "]", ex);
         }
+    }
+
+
+    @Bean
+    public TaskExecutor getAsyncExecutor() {
+        var pool = new ThreadPoolTaskExecutor();
+        pool.setMaxPoolSize(100);
+        pool.setCorePoolSize(5);
+        pool.setThreadNamePrefix("Custom-Pool-Executor");
+        pool.initialize();
+        return pool;
+    }
+
+    @Bean
+    public TaskScheduler threadPoolTaskScheduler(){
+        var threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(5);
+        threadPoolTaskScheduler.setThreadNamePrefix(
+                "Custom-Pool-Scheduler");
+        return threadPoolTaskScheduler;
     }
 }
