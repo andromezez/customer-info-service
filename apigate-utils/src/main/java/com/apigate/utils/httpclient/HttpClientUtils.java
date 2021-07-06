@@ -3,10 +3,11 @@ package com.apigate.utils.httpclient;
 import com.apigate.logging.ServicesLog;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -29,7 +30,7 @@ public class HttpClientUtils {
         private Header[] headers;
 
         public boolean isResponseComplete() {
-            if ((code > 0) && StringUtils.isNotBlank(body) && (headers != null)) {
+            if ((code > 0) /*&& StringUtils.isNotBlank(body)*/ && (headers != null)) { //response from request method HEAD won't have body in the response
                 return true;
             } else {
                 return false;
@@ -47,8 +48,7 @@ public class HttpClientUtils {
 
     private HttpClientUtils(){}
 
-    public static HttpResponse executeGetRequest(String endpoint) throws IOException {
-        HttpGet httpGet = new HttpGet(endpoint);
+    private static HttpResponse executeRequest(ClassicHttpRequest httpRequest) throws IOException {
         HttpResponse result = new HttpResponse();
 
         //HttpClientConnectionManagerPool.getPoolingConnManager().closeExpired();
@@ -56,9 +56,9 @@ public class HttpClientUtils {
 
         //var httpClient = HttpClientPool.getHttpClientInstance();
 
-        ServicesLog.getInstance().logInfo("Sending http request to " + endpoint);
-        try (CloseableHttpResponse httpResponse = HttpClientSingleton.getInstance().execute(httpGet)) {
-            ServicesLog.getInstance().logInfo("Get http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase());
+        ServicesLog.getInstance().logInfo("Sending http "+ httpRequest.getMethod() +" request to " + httpRequest.getRequestUri());
+        try (CloseableHttpResponse httpResponse = HttpClientSingleton.getInstance().execute(httpRequest)) {
+            ServicesLog.getInstance().logInfo("Receive http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase());
 
             HttpEntity entity = httpResponse.getEntity();
             result.setBody(IOUtils.toString(entity.getContent(), StandardCharsets.UTF_8.name()));
@@ -75,6 +75,14 @@ public class HttpClientUtils {
         //HttpClientPool.returnToPool(httpClient);
 
         return result;
+    }
+
+    public static HttpResponse executeRequest(HttpPost httpPost) throws IOException {
+        return executeRequest((ClassicHttpRequest) httpPost);
+    }
+
+    public static HttpResponse executeRequest(HttpGet httpGet) throws IOException {
+        return executeRequest((ClassicHttpRequest) httpGet);
     }
 
     public static String subtitutePath(URL originalUrl, HttpServletRequest replaceWith){
