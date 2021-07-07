@@ -42,6 +42,16 @@ public class Masking implements Serializable {
     @Column(name = "updated_at", table = "masking", nullable = false)
     private ZonedDateTime updatedAt;
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "at_log", table = "masking", nullable = false)
+    private boolean atLog;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "at_response", table = "masking", nullable = false)
+    private boolean atResponse;
+
     @ManyToOne(optional = false)
     @JoinColumns({
         @JoinColumn(name = "client_id", referencedColumnName = "client_id", insertable = false, updatable = false),
@@ -113,6 +123,24 @@ public class Masking implements Serializable {
 
     public void setRouting(Routing routing) {
         this.routing = routing;
+    }
+
+    public boolean isAtLog() {
+        return atLog;
+    }
+
+    public Masking setAtLog(boolean atLog) {
+        this.atLog = atLog;
+        return this;
+    }
+
+    public boolean isAtResponse() {
+        return atResponse;
+    }
+
+    public Masking setAtResponse(boolean atResponse) {
+        this.atResponse = atResponse;
+        return this;
     }
 
     @Override
