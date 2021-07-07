@@ -52,4 +52,9 @@ public class Config {
     public void setSchedulerPeriodTokenRefresh(int value) {
         com.apigate.config.Config.setRefreshTokenSchedulerPeriod(Duration.ofSeconds(value));
     }
+
+    @Value("${apigate.cust-info.mask}")
+    public void setCustInfoMask(String value) {
+        com.apigate.config.Config.setApigateCustInfoMask(value);
+    }
 }

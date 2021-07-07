@@ -20,6 +20,8 @@ public class Config {
     private static Duration TTL_LEFT_BEFORE_REFRESH_TOKEN = Duration.ofSeconds(10);
     private static Duration REFRESH_TOKEN_SCHEDULER_PERIOD = Duration.ofSeconds(10);
 
+    private static String APIGATE_CUST_INFO_MASK = "********";
+
     /**
      * Gets apigate http client timeout.
      *
@@ -86,5 +88,13 @@ public class Config {
 
     public static void setRefreshTokenSchedulerPeriod(Duration refreshTokenSchedulerPeriod) {
         REFRESH_TOKEN_SCHEDULER_PERIOD = refreshTokenSchedulerPeriod;
+    }
+
+    public static String getApigateCustInfoMask() {
+        return APIGATE_CUST_INFO_MASK;
+    }
+
+    public static void setApigateCustInfoMask(String apigateCustInfoMask) {
+        APIGATE_CUST_INFO_MASK = apigateCustInfoMask;
     }
 }

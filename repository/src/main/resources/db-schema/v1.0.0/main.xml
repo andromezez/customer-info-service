@@ -10,5 +10,4 @@
     <include file="2021-06-03_[changeset-05]_create_masking_table.xml" relativeToChangelogFile="true"/>
     <include file="2021-06-03_[changeset-06]_load_initial_celcom_mno_data.xml" relativeToChangelogFile="true"/>
     <include file="2021-06-03_[changeset-07]_create_versioning_table.xml" relativeToChangelogFile="true"/>
-    <include file="2021-07-07_[changeset-01]_add_columns_log_response_masking_table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
