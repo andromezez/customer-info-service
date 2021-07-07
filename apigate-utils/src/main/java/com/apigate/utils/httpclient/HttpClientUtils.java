@@ -14,6 +14,8 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -48,7 +50,7 @@ public class HttpClientUtils {
 
     private HttpClientUtils(){}
 
-    private static HttpResponse executeRequest(ClassicHttpRequest httpRequest) throws IOException {
+    private static HttpResponse executeRequest(ClassicHttpRequest httpRequest) throws IOException, URISyntaxException {
         HttpResponse result = new HttpResponse();
 
         //HttpClientConnectionManagerPool.getPoolingConnManager().closeExpired();
@@ -56,7 +58,8 @@ public class HttpClientUtils {
 
         //var httpClient = HttpClientPool.getHttpClientInstance();
 
-        ServicesLog.getInstance().logInfo("Sending http "+ httpRequest.getMethod() +" request to " + httpRequest.getRequestUri());
+        URI uri = httpRequest.getUri();
+        ServicesLog.getInstance().logInfo("Sending http "+ httpRequest.getMethod() +" request to " + uri.toString());
         try (CloseableHttpResponse httpResponse = HttpClientSingleton.getInstance().execute(httpRequest)) {
             ServicesLog.getInstance().logInfo("Receive http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase());
 
@@ -77,11 +80,11 @@ public class HttpClientUtils {
         return result;
     }
 
-    public static HttpResponse executeRequest(HttpPost httpPost) throws IOException {
+    public static HttpResponse executeRequest(HttpPost httpPost) throws IOException, URISyntaxException {
         return executeRequest((ClassicHttpRequest) httpPost);
     }
 
-    public static HttpResponse executeRequest(HttpGet httpGet) throws IOException {
+    public static HttpResponse executeRequest(HttpGet httpGet) throws IOException, URISyntaxException {
         return executeRequest((ClassicHttpRequest) httpGet);
     }
 

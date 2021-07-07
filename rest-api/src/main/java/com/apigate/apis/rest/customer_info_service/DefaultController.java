@@ -1,6 +1,7 @@
 package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.apis.rest.util.HTTPUtils;
+import com.apigate.config.Config;
 import com.apigate.customer_info_service.service.CacheService;
 import com.apigate.customer_info_service.service.RoutingService;
 import com.apigate.exceptions.business.BusinessValidationException;
@@ -61,6 +62,7 @@ public class DefaultController extends AbstractController{
 
                     if(StringUtils.isNotBlank(cacheResponse)){
                         ServicesLog.getInstance().logInfo("Cache is found");
+                        //TODO : implement masking here
                         responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(cacheResponse);
                     }else{
                         ServicesLog.getInstance().logInfo("Cache not found. Cache is " + cacheResponse);
@@ -73,6 +75,7 @@ public class DefaultController extends AbstractController{
                             }catch (Exception e){
                                 ServicesLog.getInstance().logError(e);
                             }
+                            //TODO : implement masking here
                             responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(httpResponse.getBody());
                         }else{
                             String errorMessage = "Operator endpoint " + routing.get().getMnoApiEndpoint().getUrl()

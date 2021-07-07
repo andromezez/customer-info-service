@@ -21,7 +21,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Bayu Utomo
@@ -51,32 +51,48 @@ public class TokenManagement {
         return "token:" + mno.getId() + ":refresh";
     }
 
+    private String getTokenTypeRedisKey(Mno mno) {
+        return "token:" + mno.getId() + ":token-type";
+    }
+
     private Duration getTokenExpirePeriod(Mno mno){
         return cacheService.getRemainingTTL(getTokenAccessRedisKey(mno));
     }
 
     @EventListener
-    public void checkTokenAfterStartup(ApplicationReadyEvent event) {
-        var mnoList = mnoRepository.findAll();
-        for(var mno : mnoList){
-            taskExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    for(int i=1;i<=10;i++){
-                        try {
-                            ServicesLog.getInstance().logInfo("testing event listener execute background task");
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            ServicesLog.getInstance().logError(e);
+    public void initTokenAfterStartup(ApplicationReadyEvent event) {
+        taskScheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                var mnoList = mnoRepository.findAll();
+                AtomicInteger completedTask = new AtomicInteger(0);
+                for(var mno : mnoList){
+                    taskExecutor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                renewToken(mno);
+                            }catch (Exception e){
+                                ServicesLog.getInstance().logError(e);
+                            }finally {
+                                completedTask.incrementAndGet();
+                            }
                         }
-                    }
-                    //renewToken(mno);
+                    });
                 }
-            });
-        }
+                while (mnoList.size() > completedTask.get() ){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        //ignore
+                    }
+                }
+            }
+        },Config.getRefreshTokenSchedulerPeriod());
     }
 
-    public void renewToken(Mno mno){
+    private void renewToken(Mno mno){
+        ServicesLog.getInstance().logInfo("Token management trying to refresh token for operator " + mno.getName());
         var expireInFromCache = getTokenExpirePeriod(mno);
         boolean cacheHasBeenRenewed = false;
         if(expireInFromCache.getSeconds() <= Config.getTtlLeftBeforeRefreshToken().getSeconds()){ // try to refresh or create even if the token cache doesn't exist
@@ -86,13 +102,14 @@ public class TokenManagement {
             String authKey = mno.getAuthKey();
             var refreshTokenHttpRequest= new RefreshTokenHttpRequest(mno.getTokenUrl(),refreshTokenFromCache,authKey);
             HttpClientUtils.HttpResponse refreshResponse = null;
+
             try{
                 refreshResponse = HttpClientUtils.executeRequest(refreshTokenHttpRequest.getRequest());
             }catch (Exception e){
                 ServicesLog.getInstance().logError(e);
             }
 
-            String newAccessToken = null, newRefreshToken = null;
+            String newAccessToken = null, newRefreshToken = null, newTokenType=null;
             int newExpireIn = 0;
 
             if ((refreshResponse != null)
@@ -113,59 +130,61 @@ public class TokenManagement {
                     newAccessToken = refreshResponseBody.getAccessToken();
                     newRefreshToken = refreshResponseBody.getRefreshToken();
                     newExpireIn = refreshResponseBody.getExpiresIn();
+                    newTokenType = refreshResponseBody.getTokenType();
                 }
 
             }else{//If error or false, then call token create
                 var createTokenHttpRequest= new CreateTokenHttpRequest(mno.getTokenUrl(),mno.getUsername(),mno.getPassword(),authKey);
                 HttpClientUtils.HttpResponse createResponse = null;
+
                 try{
                     createResponse = HttpClientUtils.executeRequest(createTokenHttpRequest.getRequest());
-                    if((createResponse != null)
-                            && createResponse.isResponseComplete()
-                            && (createResponse.getCode() == HttpStatus.OK.value() || createResponse.getCode() == HttpStatus.CREATED.value())){
-
-                        ObjectMapper mapper = ObjectMapperUtils.getMapperInstance();
-                        CreateTokenResDto createResponseBody = null;
-                        try {
-                            createResponseBody = mapper.readValue(refreshResponse.getBody(), CreateTokenResDto.class);
-                        } catch (JsonProcessingException e) {
-                            ServicesLog.getInstance().logError(e);
-                        }finally {
-                            ObjectMapperUtils.returnToPool(mapper);
-                        }
-
-                        if(createResponseBody != null){
-                            newAccessToken = createResponseBody.getAccessToken();
-                            newRefreshToken = createResponseBody.getRefreshToken();
-                            newExpireIn = createResponseBody.getExpiresIn();
-                        }
-                    }
                 }catch (Exception e){
                     ServicesLog.getInstance().logError(e);
                 }
+
+                if((createResponse != null)
+                        && createResponse.isResponseComplete()
+                        && (createResponse.getCode() == HttpStatus.OK.value() || createResponse.getCode() == HttpStatus.CREATED.value())){
+
+                    ObjectMapper mapper = ObjectMapperUtils.getMapperInstance();
+                    CreateTokenResDto createResponseBody = null;
+                    try {
+                        createResponseBody = mapper.readValue(refreshResponse.getBody(), CreateTokenResDto.class);
+                    } catch (JsonProcessingException e) {
+                        ServicesLog.getInstance().logError(e);
+                    }finally {
+                        ObjectMapperUtils.returnToPool(mapper);
+                    }
+
+                    if(createResponseBody != null){
+                        newAccessToken = createResponseBody.getAccessToken();
+                        newRefreshToken = createResponseBody.getRefreshToken();
+                        newExpireIn = createResponseBody.getExpiresIn();
+                        newTokenType = createResponseBody.getTokenType();
+                    }
+                }
             }
 
-            if(StringUtils.isNoneBlank(newAccessToken,newRefreshToken) && newExpireIn > 0){ //once success getting new valid token from refresh process or create process, then set scheduler to keep track refresh token based on new expiry
-                cacheService.createCache(getTokenAccessRedisKey(mno),newAccessToken,newExpireIn);
-                cacheService.createCache(getTokenRefreshRedisKey(mno),newRefreshToken,newExpireIn);
-
-                taskScheduler.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                }, Instant.now().plusSeconds(newExpireIn-Config.getTtlLeftBeforeRefreshToken().getSeconds()));
+            if(StringUtils.isNoneBlank(newAccessToken,newRefreshToken,newTokenType) && newExpireIn > 0){ //success getting new valid token from refresh process or create process
+                cacheService.createCache(getTokenAccessRedisKey(mno), newAccessToken, newExpireIn);
+                cacheService.createCache(getTokenRefreshRedisKey(mno), newRefreshToken, newExpireIn);
+                cacheService.createCache(getTokenTypeRedisKey(mno), newRefreshToken, newExpireIn);
 
                 cacheHasBeenRenewed = true;
             }
         }
 
-        if(!cacheHasBeenRenewed){
-            if(expireInFromCache.getSeconds()>0){ //no renew (process failed), but there is still existing cache, then set scheduler to keep track refresh token based on expiry of the existing token
-
-            }else{ //no renew (process failed) the token from refresh process and from create process, and no existing cache as well
-
+        if (!cacheHasBeenRenewed) {
+            if (expireInFromCache.getSeconds() > Config.getTtlLeftBeforeRefreshToken().getSeconds()) { //no renew, since token cache still valid for more than the expiry limit
+                ServicesLog.getInstance().logInfo("No refresh token. Token still valid for " + expireInFromCache.getSeconds() + " seconds. Not reaching the expiry limit.");
+            } else if (expireInFromCache.getSeconds() > 0) { //no renew (process failed), but there is still existing cache
+                ServicesLog.getInstance().logError(new Exception("Failure on the process. Token is not refreshed. Token will expire in approx " + expireInFromCache.getSeconds() + " seconds."));
+            } else {
+                ServicesLog.getInstance().logError(new Exception("Process failed to get the token from refresh process and from create process, and no existing cache as well."));
             }
+        } else {
+            ServicesLog.getInstance().logInfo("Token is refreshed");
         }
     }
 }

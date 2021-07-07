@@ -47,4 +47,9 @@ public class Config {
     public void setTtlTokenRefresh(int value) {
         com.apigate.config.Config.setTtlLeftBeforeRefreshToken(Duration.ofSeconds(value));
     }
+
+    @Value("${apigate.cust-info.operator.token.refresh.scheduler}")
+    public void setSchedulerPeriodTokenRefresh(int value) {
+        com.apigate.config.Config.setRefreshTokenSchedulerPeriod(Duration.ofSeconds(value));
+    }
 }

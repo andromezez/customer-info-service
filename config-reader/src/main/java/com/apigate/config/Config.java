@@ -18,6 +18,7 @@ public class Config {
     private static int APIGATE_HTTP_CLIENT_TIMEOUT = 5; //in seconds
 
     private static Duration TTL_LEFT_BEFORE_REFRESH_TOKEN = Duration.ofSeconds(10);
+    private static Duration REFRESH_TOKEN_SCHEDULER_PERIOD = Duration.ofSeconds(10);
 
     /**
      * Gets apigate http client timeout.
@@ -77,5 +78,13 @@ public class Config {
 
     public static void setTtlLeftBeforeRefreshToken(Duration ttlLeftBeforeRefreshToken) {
         TTL_LEFT_BEFORE_REFRESH_TOKEN = ttlLeftBeforeRefreshToken;
+    }
+
+    public static Duration getRefreshTokenSchedulerPeriod() {
+        return REFRESH_TOKEN_SCHEDULER_PERIOD;
+    }
+
+    public static void setRefreshTokenSchedulerPeriod(Duration refreshTokenSchedulerPeriod) {
+        REFRESH_TOKEN_SCHEDULER_PERIOD = refreshTokenSchedulerPeriod;
     }
 }
