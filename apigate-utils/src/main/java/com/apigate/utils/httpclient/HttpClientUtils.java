@@ -53,11 +53,6 @@ public class HttpClientUtils {
     private static HttpResponse executeRequest(ClassicHttpRequest httpRequest) throws IOException, URISyntaxException {
         HttpResponse result = new HttpResponse();
 
-        //HttpClientConnectionManagerPool.getPoolingConnManager().closeExpired();
-        //HttpClientConnectionManagerPool.getPoolingConnManager().closeIdle(TimeValue.ofMinutes(3));
-
-        //var httpClient = HttpClientPool.getHttpClientInstance();
-
         URI uri = httpRequest.getUri();
         ServicesLog.getInstance().logInfo("Sending http "+ httpRequest.getMethod() +" request to " + uri.toString());
         try (CloseableHttpResponse httpResponse = HttpClientSingleton.getInstance().execute(httpRequest)) {
@@ -74,8 +69,6 @@ public class HttpClientUtils {
             // and ensure it is fully consumed
             EntityUtils.consume(entity);
         }
-
-        //HttpClientPool.returnToPool(httpClient);
 
         return result;
     }
