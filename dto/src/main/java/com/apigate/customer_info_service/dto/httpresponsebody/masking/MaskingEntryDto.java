@@ -25,10 +25,10 @@ public class MaskingEntryDto {
     private String jsonPath;
 
     @JsonProperty
-    private String mask;
+    private boolean atLog;
 
     @JsonProperty
-    private boolean active;
+    private boolean atResponse;
 
     @JsonProperty
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.TIMESTAMP_PATTERN)
@@ -42,8 +42,8 @@ public class MaskingEntryDto {
         clientId = masking.getMaskingPK().getClientId();
         endpointId = masking.getMaskingPK().getMnoApiEndpointId();
         jsonPath = masking.getMaskingPK().getJsonPath();
-        mask = masking.getMask();
-        active = masking.isActive();
+        atLog = masking.isAtLog();
+        atResponse = masking.isAtResponse();
         createdAt = masking.getCreatedAt();
         updatedAt = masking.getUpdatedAt();
     }

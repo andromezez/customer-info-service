@@ -24,11 +24,10 @@ public class UpdateMaskingEntryReqDto {
     private String jsonPath;
 
     @JsonProperty
-    @NotBlank(message = "mask must have value",  groups = Step1.class)
-    @Size(max = 30, message = "mask invalid length", groups = Step2.class)
-    private String mask;
+    @NotNull(message = "st_log must have value",  groups = Step1.class)
+    private boolean atLog;
 
     @JsonProperty
-    @NotNull(message = "active must have value",  groups = Step1.class)
-    private boolean active;
+    @NotNull(message = "at_response must have value",  groups = Step1.class)
+    private boolean atResponse;
 }

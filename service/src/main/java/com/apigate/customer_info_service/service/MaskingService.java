@@ -69,8 +69,8 @@ public class MaskingService {
         if(existingMaskingDB.isPresent()){
             MaskingEntryDto result = new MaskingEntryDto();;
             if(existingMaskingDB.get().getMaskingPK().getJsonPath().equals(updateMaskingEntryReqDto.getJsonPath())){
-                existingMaskingDB.get().setMask(updateMaskingEntryReqDto.getMask());
-                existingMaskingDB.get().setActive(updateMaskingEntryReqDto.isActive());
+                existingMaskingDB.get().setAtLog(updateMaskingEntryReqDto.isAtLog());
+                existingMaskingDB.get().setAtResponse(updateMaskingEntryReqDto.isAtResponse());
                 existingMaskingDB.get().setUpdatedAt(ZonedDateTime.now());
 
                 var maskingDBAfterUpdate = maskingRepository.save(existingMaskingDB.get());
@@ -78,8 +78,8 @@ public class MaskingService {
                 result.parseFrom(maskingDBAfterUpdate);
             }else{
                 Masking newMasking = new Masking(new MaskingPK(clientId, endpointId, updateMaskingEntryReqDto.getJsonPath()),
-                                            updateMaskingEntryReqDto.getMask(),
-                                            updateMaskingEntryReqDto.isActive(),
+                                            updateMaskingEntryReqDto.isAtLog(),
+                                            updateMaskingEntryReqDto.isAtResponse(),
                                             ZonedDateTime.now(),
                                             ZonedDateTime.now());
 
@@ -106,8 +106,8 @@ public class MaskingService {
 
         if(!maskingRepository.existsById(maskingPK)){
             Masking newMasking = new Masking(maskingPK,
-                    updateMaskingEntryReqDto.getMask(),
-                    updateMaskingEntryReqDto.isActive(),
+                    updateMaskingEntryReqDto.isAtLog(),
+                    updateMaskingEntryReqDto.isAtResponse(),
                     ZonedDateTime.now(),
                     ZonedDateTime.now());
 

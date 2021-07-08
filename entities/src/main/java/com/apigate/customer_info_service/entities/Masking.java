@@ -23,17 +23,6 @@ public class Masking implements Serializable {
 
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 30)
-    @Column(name = "mask")
-    private String mask;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "active", table = "masking", nullable = false)
-    private boolean active;
-
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "created_at", table = "masking", nullable = false)
     private ZonedDateTime createdAt;
 
@@ -65,10 +54,10 @@ public class Masking implements Serializable {
         this.maskingPK = maskingPK;
     }
 
-    public Masking(MaskingPK maskingPK, String mask, boolean active, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
+    public Masking(MaskingPK maskingPK, boolean atLog, boolean atResponse, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.maskingPK = maskingPK;
-        this.mask = mask;
-        this.active = active;
+        this.atLog = atLog;
+        this.atResponse = atResponse;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -84,23 +73,7 @@ public class Masking implements Serializable {
     public void setMaskingPK(MaskingPK maskingPK) {
         this.maskingPK = maskingPK;
     }
-
-    public String getMask() {
-        return mask;
-    }
-
-    public void setMask(String mask) {
-        this.mask = mask;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
+    
     public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
