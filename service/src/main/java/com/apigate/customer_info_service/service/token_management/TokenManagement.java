@@ -6,6 +6,7 @@ import com.apigate.customer_info_service.dto.httpresponsebody.operator.token_man
 import com.apigate.customer_info_service.entities.Mno;
 import com.apigate.customer_info_service.repository.MnoRepository;
 import com.apigate.customer_info_service.service.CacheService;
+import com.apigate.logging.RequestIDGenerator;
 import com.apigate.logging.ServicesLog;
 import com.apigate.utils.httpclient.HttpClientUtils;
 import com.apigate.utils.json_processor.ObjectMapperUtils;
@@ -64,6 +65,8 @@ public class TokenManagement {
         taskScheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
+                com.apigate.logging.Logger.registerReqId(RequestIDGenerator.generateId());
+                ServicesLog.getInstance().logInfo("Start Token management scheduler");
                 var mnoList = mnoRepository.findAll();
                 AtomicInteger completedTask = new AtomicInteger(0);
                 for(var mno : mnoList){
@@ -71,11 +74,13 @@ public class TokenManagement {
                         @Override
                         public void run() {
                             try{
+                                com.apigate.logging.Logger.registerReqId(RequestIDGenerator.generateId());
                                 renewToken(mno);
                             }catch (Exception e){
                                 ServicesLog.getInstance().logError(e);
                             }finally {
                                 completedTask.incrementAndGet();
+                                com.apigate.logging.Logger.removeDianosticContext();
                             }
                         }
                     });
@@ -87,6 +92,8 @@ public class TokenManagement {
                         //ignore
                     }
                 }
+                ServicesLog.getInstance().logInfo("Finish Token management scheduler");
+                com.apigate.logging.Logger.removeDianosticContext();
             }
         },Config.getRefreshTokenSchedulerPeriod());
     }
