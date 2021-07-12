@@ -25,7 +25,7 @@ public class ClientService {
     private ClientRepository clientRepository;
 
     @Autowired
-    private CacheService cacheService;
+    private RoutingService routingService;
 
     private List<ClientEntryDto> fillClientsDto(List<Client> clientList){
         var result = new ArrayList<ClientEntryDto>(1);
@@ -87,7 +87,7 @@ public class ClientService {
 
                 if ((!updatedClient.isCacheActive()) && (isActiveBefore)) {
                     for(var routing : updatedClient.getRoutingCollection()){
-                        cacheService.removeCache(routing.getRedisKey());
+                        routingService.removeRoutingResponseCache(routing);
                     }
                 }
 

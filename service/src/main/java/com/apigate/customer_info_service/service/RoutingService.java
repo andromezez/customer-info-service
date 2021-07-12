@@ -93,7 +93,7 @@ public class RoutingService {
             result.parseFrom(routingDBAfterUpdate);
 
             if ((!routingDBAfterUpdate.isCacheActive()) && (isActiveBefore)) {
-                cacheService.removeCache(routingDBAfterUpdate.getRedisKey());
+                removeRoutingResponseCache(routingDBAfterUpdate);
             }
 
             return result;
@@ -187,8 +187,11 @@ public class RoutingService {
         return routing.getRedisKey()+":"+msisdn;
     }
 
-    public void removeRoutingResponseCache(){
-
+    public void removeRoutingResponseCache(Routing routing){
+        var keys = cacheService.getKeys(routing.getRedisKey()+"*");
+        for (var key : keys){
+            cacheService.removeCache(key);
+        }
     }
 
 }
