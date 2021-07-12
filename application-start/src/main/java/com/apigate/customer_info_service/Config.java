@@ -57,4 +57,9 @@ public class Config {
     public void setCustInfoMask(String value) {
         com.apigate.config.Config.setApigateCustInfoMask(value);
     }
+
+    @Value("${apigate.cust-info.operator.endpoint.path-variable.msisdn}")
+    public void setPathVariablePattern(String value) {
+        com.apigate.config.Config.setApigateCustInfoOperatorEndpointPathvariablePatternMsisdn(value);
+    }
 }

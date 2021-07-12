@@ -1,8 +1,8 @@
 package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.apis.rest.util.HTTPUtils;
-import com.apigate.config.Config;
 import com.apigate.customer_info_service.service.CacheService;
+import com.apigate.customer_info_service.service.OperatorEndpointService;
 import com.apigate.customer_info_service.service.RoutingService;
 import com.apigate.exceptions.business.BusinessValidationException;
 import com.apigate.exceptions.internal.SystemErrorException;
@@ -34,6 +34,9 @@ public class DefaultController extends AbstractController{
     private RoutingService routingService;
 
     @Autowired
+    private OperatorEndpointService operatorEndpointService;
+
+    @Autowired
     private CacheService cacheService;
 
     @RequestMapping(value="**")
@@ -49,10 +52,13 @@ public class DefaultController extends AbstractController{
                 var routing = routingService.findRouting(request, partnerId);
                 if(routing.isPresent()){
                     String cacheResponse = null;
+
+                    String incomingRequestMsisdn = operatorEndpointService.getMsisdn(routing.get().getMnoApiEndpoint(), request);
+
                     try{
                         if(routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
                             ServicesLog.getInstance().logInfo("Cache is on");
-                            cacheResponse = cacheService.getFromCache(routing.get().getRedisKey());
+                            cacheResponse = cacheService.getRoutingResponseCache(routing.get(), incomingRequestMsisdn);
                         }else{
                             ServicesLog.getInstance().logInfo("Cache is off");
                         }
@@ -71,12 +77,14 @@ public class DefaultController extends AbstractController{
                         var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
                             try{
-                                cacheService.createCache(routing.get(),httpResponse.getBody());
+                                if(httpResponse.getCode() == HttpStatus.OK.value()){
+                                    cacheService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,httpResponse.getBody());
+                                }
                             }catch (Exception e){
                                 ServicesLog.getInstance().logError(e);
                             }
                             //TODO : implement masking here
-                            responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(httpResponse.getBody());
+                            responseEntity = ResponseEntity.status(HttpStatus.valueOf(httpResponse.getCode())).contentType(MediaType.APPLICATION_JSON).body(httpResponse.getBody());
                         }else{
                             String errorMessage = "Operator endpoint " + routing.get().getMnoApiEndpoint().getUrl()
                                     + " doesn't return proper response.";

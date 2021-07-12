@@ -2,6 +2,7 @@ package com.apigate.customer_info_service.service;
 
 import com.apigate.customer_info_service.entities.Routing;
 import com.apigate.logging.ServicesLog;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,8 @@ public class CacheService {
         }
     }
 
-    public void createCache(Routing routing, String value){
-        createCache(routing.getRedisKey(), value, routing.getCachePeriod());
+    public void createRoutingResponseCache(Routing routing, String msisdn, String responseBody) throws IllegalArgumentException{
+        createCache(getRoutingResponseCacheRedisKey(routing, msisdn), responseBody, routing.getCachePeriod());
     }
 
     public String getFromCache(String key){
@@ -38,6 +39,17 @@ public class CacheService {
             ServicesLog.getInstance().logError(e);
         }
         return "";
+    }
+
+    public String getRoutingResponseCache(Routing routing, String msisdn) throws IllegalArgumentException{
+        return getFromCache(getRoutingResponseCacheRedisKey(routing, msisdn));
+    }
+
+    private String getRoutingResponseCacheRedisKey(Routing routing, String msisdn) throws IllegalArgumentException{
+        if(StringUtils.isBlank(msisdn)){
+            throw new IllegalArgumentException("getRoutingResponseCacheRedisKey doesn't allow empty msisdn");
+        }
+        return routing.getRedisKey()+":"+msisdn;
     }
 
     public boolean removeCache(String key){

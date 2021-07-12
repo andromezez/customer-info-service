@@ -23,7 +23,7 @@
     <changeSet author="BayuUtomo" id="load_initial_celcom_mno_api_endpoint_data" failOnError="true">
         <insert  dbms="postgresql" tableName="mno_api_endpoint">
             <column name="id" value="celcomapi1"/>
-            <column name="url" value="https://celcom.com:8080/oneapi/queryprofile/v1/{userAddress}/subscribertype"/>
+            <column name="url" value="https://celcom.com:8080/oneapi/queryprofile/v1/{msisdn}/subscribertype"/>
             <column name="created_at" value="now()"/>
             <column name="updated_at" value="now()"/>
             <column name="mno_id" value="celcom"/>
@@ -31,7 +31,7 @@
         </insert>
         <insert  dbms="postgresql" tableName="mno_api_endpoint">
             <column name="id" value="celcomapi2"/>
-            <column name="url" value="https://celcom.com:8080/ms-subscriber-profile-query/v1.0/subscribers/{userAddress}/profileretrieve"/>
+            <column name="url" value="https://celcom.com:8080/ms-subscriber-profile-query/v1.0/subscribers/{msisdn}/profileretrieve"/>
             <column name="created_at" value="now()"/>
             <column name="updated_at" value="now()"/>
             <column name="mno_id" value="celcom"/>

@@ -11,6 +11,7 @@ import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -45,6 +46,14 @@ public class HttpClientUtils {
                     .appendWithSeparators(headers," , ")
                     .append(" ]")
                     .toString();
+        }
+
+        public HttpHeaders getHeadersForSpring(){
+            HttpHeaders httpHeaders = new HttpHeaders();
+            for(var header : headers){
+                httpHeaders.add(header.getName(),header.getValue());
+            }
+            return httpHeaders;
         }
     }
 

@@ -21,6 +21,7 @@ public class Config {
     private static Duration REFRESH_TOKEN_SCHEDULER_PERIOD = Duration.ofSeconds(10);
 
     private static String APIGATE_CUST_INFO_MASK = "********";
+    private static String APIGATE_CUST_INFO_OPERATOR_ENDPOINT_PATHVARIABLE_PATTERN_MSISDN = "msisdn";
 
     /**
      * Gets apigate http client timeout.
@@ -96,5 +97,13 @@ public class Config {
 
     public static void setApigateCustInfoMask(String apigateCustInfoMask) {
         APIGATE_CUST_INFO_MASK = apigateCustInfoMask;
+    }
+
+    public static String getApigateCustInfoOperatorEndpointPathvariablePatternMsisdn() {
+        return APIGATE_CUST_INFO_OPERATOR_ENDPOINT_PATHVARIABLE_PATTERN_MSISDN;
+    }
+
+    public static void setApigateCustInfoOperatorEndpointPathvariablePatternMsisdn(String apigateCustInfoOperatorEndpointPathvariablePatternMsisdn) {
+        APIGATE_CUST_INFO_OPERATOR_ENDPOINT_PATHVARIABLE_PATTERN_MSISDN = apigateCustInfoOperatorEndpointPathvariablePatternMsisdn;
     }
 }
