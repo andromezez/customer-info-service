@@ -11,6 +11,7 @@ import com.apigate.customer_info_service.repository.RoutingRepository;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.CommonLog;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
@@ -169,6 +170,25 @@ public class RoutingService {
         }else{
             return Optional.empty();
         }
+    }
+
+    public void createRoutingResponseCache(Routing routing, String msisdn, String responseBody) throws IllegalArgumentException{
+        cacheService.createCache(getRoutingResponseCacheRedisKey(routing, msisdn), responseBody, routing.getCachePeriod());
+    }
+
+    public String getRoutingResponseCache(Routing routing, String msisdn) throws IllegalArgumentException{
+        return cacheService.getFromCache(getRoutingResponseCacheRedisKey(routing, msisdn));
+    }
+
+    private String getRoutingResponseCacheRedisKey(Routing routing, String msisdn) throws IllegalArgumentException{
+        if(StringUtils.isBlank(msisdn)){
+            throw new IllegalArgumentException("getRoutingResponseCacheRedisKey doesn't allow empty msisdn");
+        }
+        return routing.getRedisKey()+":"+msisdn;
+    }
+
+    public void removeRoutingResponseCache(){
+
     }
 
 }

@@ -1,7 +1,6 @@
 package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.apis.rest.util.HTTPUtils;
-import com.apigate.customer_info_service.service.CacheService;
 import com.apigate.customer_info_service.service.OperatorEndpointService;
 import com.apigate.customer_info_service.service.RoutingService;
 import com.apigate.exceptions.internal.ErrorException;
@@ -35,9 +34,6 @@ public class DefaultController extends AbstractController{
     @Autowired
     private OperatorEndpointService operatorEndpointService;
 
-    @Autowired
-    private CacheService cacheService;
-
     @RequestMapping(value="**")
     public ResponseEntity getAnythingElse(@RequestHeader(name = "application_id", required = false) String partnerId, HttpServletRequest request) {
         ResponseEntity responseEntity = null;
@@ -57,7 +53,7 @@ public class DefaultController extends AbstractController{
                     try{
                         if(routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
                             ServicesLog.getInstance().logInfo("Cache is on");
-                            cacheResponse = cacheService.getRoutingResponseCache(routing.get(), incomingRequestMsisdn);
+                            cacheResponse = routingService.getRoutingResponseCache(routing.get(), incomingRequestMsisdn);
                         }else{
                             ServicesLog.getInstance().logInfo("Cache is off");
                         }
@@ -77,7 +73,7 @@ public class DefaultController extends AbstractController{
                         if(httpResponse.isResponseComplete()){
                             try{
                                 if(httpResponse.getCode() == HttpStatus.OK.value()){
-                                    cacheService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,httpResponse.getBody());
+                                    routingService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,httpResponse.getBody());
                                 }
                             }catch (Exception e){
                                 ServicesLog.getInstance().logError(e);

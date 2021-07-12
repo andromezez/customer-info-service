@@ -1,13 +1,13 @@
 package com.apigate.customer_info_service.service;
 
-import com.apigate.customer_info_service.entities.Routing;
 import com.apigate.logging.ServicesLog;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Bayu Utomo
@@ -28,10 +28,6 @@ public class CacheService {
         }
     }
 
-    public void createRoutingResponseCache(Routing routing, String msisdn, String responseBody) throws IllegalArgumentException{
-        createCache(getRoutingResponseCacheRedisKey(routing, msisdn), responseBody, routing.getCachePeriod());
-    }
-
     public String getFromCache(String key){
         try{
             return redisTemplate.opsForValue().get(key);
@@ -39,17 +35,6 @@ public class CacheService {
             ServicesLog.getInstance().logError(e);
         }
         return "";
-    }
-
-    public String getRoutingResponseCache(Routing routing, String msisdn) throws IllegalArgumentException{
-        return getFromCache(getRoutingResponseCacheRedisKey(routing, msisdn));
-    }
-
-    private String getRoutingResponseCacheRedisKey(Routing routing, String msisdn) throws IllegalArgumentException{
-        if(StringUtils.isBlank(msisdn)){
-            throw new IllegalArgumentException("getRoutingResponseCacheRedisKey doesn't allow empty msisdn");
-        }
-        return routing.getRedisKey()+":"+msisdn;
     }
 
     public boolean removeCache(String key){
@@ -72,5 +57,14 @@ public class CacheService {
             ServicesLog.getInstance().logError(e);
         }
         return Duration.ZERO;
+    }
+
+    public Set<String> getKeys(String pattern){
+        try{
+            return redisTemplate.keys(pattern);
+        }catch (Exception e){
+            ServicesLog.getInstance().logError(e);
+        }
+        return new HashSet<>(0);
     }
 }
