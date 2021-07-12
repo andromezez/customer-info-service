@@ -24,6 +24,9 @@ public class OperatorEndpointService {
     @Autowired
     private MnoApiEndpointRepository mnoApiEndpointRepository;
 
+    @Autowired
+    private RoutingService routingService;
+
     public MnoApiEndpointEntryDto update(String id, MnoApiEndpointEntryReqDto mnoApiEndpointEntryReqDto) throws RecordNotFoundException {
         var endpointDB = mnoApiEndpointRepository.findById(id);
 
@@ -61,6 +64,20 @@ public class OperatorEndpointService {
             ServicesLog.getInstance().logError(e);
         }
         return "";
+    }
+
+    public void clearCache(String id){
+        var endpointDB = mnoApiEndpointRepository.findById(id);
+        if(endpointDB.isPresent()){
+            clearCache(endpointDB.get());
+        }
+    }
+
+    public void clearCache(MnoApiEndpoint endpointDB) {
+        var routingList = routingService.getRoutingByMnoApiEndpointId(endpointDB.getId());
+        for (var routing : routingList) {
+            routingService.removeRoutingResponseCache(routing);
+        }
     }
 
 }

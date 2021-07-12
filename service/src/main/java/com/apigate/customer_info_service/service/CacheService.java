@@ -39,10 +39,15 @@ public class CacheService {
 
     public boolean removeCache(String key){
         try{
-            return redisTemplate.delete(key);
+            var result = redisTemplate.delete(key);
+            if(result != null && result){
+                ServicesLog.getInstance().logInfo("Cache " + key + " successfully removed");
+                return true;
+            }
         }catch (Exception e){
             ServicesLog.getInstance().logError(e);
         }
+        ServicesLog.getInstance().logInfo("Can't remove cache " + key);
         return false;
     }
 

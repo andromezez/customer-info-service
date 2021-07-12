@@ -34,6 +34,9 @@ public interface RoutingRepository extends CustomRepository<Routing, RoutingPK> 
             "where r.routingPK.mnoApiEndpointId = :endpointId and c.partnerId = :partnerId")
     List<Routing> findByEndpointIdAndClientPartnerId(@Param("endpointId") String endpointId, @Param("partnerId") String partnerId);
 
+    @Query("Select r from Routing r where r.routingPK.mnoApiEndpointId = :mnoApiEndpointId")
+    List<Routing> findByMnoApiEndpointId(@Param("mnoApiEndpointId") String mnoApiEndpointId);
+
     /*@Query("SELECT r from Mno m " +
             "inner join m.mnoApiEndpointCollection mae " +
             "inner join mae.routingCollection r " +

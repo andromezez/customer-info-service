@@ -5,9 +5,11 @@ import com.apigate.customer_info_service.dto.httpresponsebody.operator_endpoint.
 import com.apigate.customer_info_service.dto.httpresponsebody.operator_endpoint.MnoApiEndpointEntryDto;
 import com.apigate.customer_info_service.dto.validator.ValidationSequence;
 import com.apigate.customer_info_service.service.OperatorEndpointService;
+import com.apigate.exceptions.HTTPResponseBody.GenericResponseMessageDto;
 import com.apigate.exceptions.HTTPResponseBody.OperationResult;
 import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.HTTPRequestLog;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +55,34 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
             endpointResDto.getOperationResult().setOperationResult(request, OperationResult.Status.SUCCESS, "", "Endpoint Successfully Updated");
 
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(endpointResDto);
+
+        }catch (Exception e){
+            ExceptionResponse exceptionResponse = processException(request, e);
+            responseEntity = exceptionResponse.responseEntity;
+            throw exceptionResponse.ex;
+        }finally {
+            logResponse(requestLog, responseEntity);
+        }
+        return responseEntity;
+    }
+
+    @PostMapping("{id}/clear-cache")
+    public ResponseEntity<Object> clearCache(@PathVariable("id") String id, HttpServletRequest request){
+
+        InitiatedData initiatedData = initiateDataAndLogRequest("",request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        ResponseEntity responseEntity = initiatedData.responseEntity;
+        HTTPRequestLog requestLog = initiatedData.requestLog;
+
+        try{
+            if(StringUtils.isBlank(id)){
+                throw new ErrorException("id can't be empty");
+            }
+
+            operatorEndpointService.clearCache(id);
+            var genericResponseMessageDto = new GenericResponseMessageDto();
+            genericResponseMessageDto.getOperationResult().setOperationResult(request, OperationResult.Status.SUCCESS, "", "Caches have been cleared successfully");
+
+            responseEntity = ResponseEntity.status(HttpStatus.OK).body(genericResponseMessageDto);
 
         }catch (Exception e){
             ExceptionResponse exceptionResponse = processException(request, e);

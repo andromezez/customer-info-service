@@ -11,6 +11,7 @@ import com.apigate.customer_info_service.repository.RoutingRepository;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.CommonLog;
+import com.apigate.logging.ServicesLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,11 @@ public class RoutingService {
     public List<RoutingEntryDto> getRoutingBy(String clientId, String operatorId){
         var routingListDB = routingRepository.findByClientIdAndMnoId(clientId,operatorId);
         return transformToDto(routingListDB);
+    }
+
+    public List<Routing> getRoutingByMnoApiEndpointId(String mnoApiEndpointId){
+        var routingListDB = routingRepository.findByMnoApiEndpointId(mnoApiEndpointId);
+        return routingListDB;
     }
 
     public RoutingEntryDto update(String clientId, String mnoApiEndpointId, UpdateRoutingEntryReqDto updateRoutingEntryReqDto) throws RecordNotFoundException{
@@ -188,7 +194,10 @@ public class RoutingService {
     }
 
     public void removeRoutingResponseCache(Routing routing){
-        var keys = cacheService.getKeys(routing.getRedisKey()+"*");
+        String pattern = routing.getRedisKey()+"*";
+        ServicesLog.getInstance().logInfo("Looking for caches with key pattern " + pattern);
+        var keys = cacheService.getKeys(pattern);
+        ServicesLog.getInstance().logInfo("Found " + keys.size() + " caches to be removed");
         for (var key : keys){
             cacheService.removeCache(key);
         }

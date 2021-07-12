@@ -3,6 +3,7 @@ package com.apigate.customer_info_service.service;
 import com.apigate.customer_info_service.dto.httpresponsebody.operator.MnoEntryDto;
 import com.apigate.customer_info_service.dto.httprequestbody.operator.MnoEntryReqDto;
 import com.apigate.customer_info_service.entities.Mno;
+import com.apigate.customer_info_service.repository.MnoApiEndpointRepository;
 import com.apigate.customer_info_service.repository.MnoRepository;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,15 @@ import java.util.List;
 public class OperatorService {
     @Autowired
     private MnoRepository mnoRepository;
+
+    @Autowired
+    private MnoApiEndpointRepository mnoApiEndpointRepository;
+
+    @Autowired
+    private RoutingService routingService;
+
+    @Autowired
+    private OperatorEndpointService endpointService;
 
     private List<MnoEntryDto> fillOperatorsDto(List<Mno> mnoList){
         List<MnoEntryDto> result = new ArrayList<>(1);
@@ -59,6 +69,13 @@ public class OperatorService {
             return fillOperatorDto(result);
         }else{
             throw new RecordNotFoundException(id);
+        }
+    }
+
+    public void clearCache(String id){
+        var endpointList = mnoApiEndpointRepository.findByMnoId(id);
+        for(var endpoint : endpointList){
+            endpointService.clearCache(endpoint);
         }
     }
 }
