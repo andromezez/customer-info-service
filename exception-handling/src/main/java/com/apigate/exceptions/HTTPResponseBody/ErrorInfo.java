@@ -4,6 +4,7 @@ import com.apigate.exceptions.AbstractException;
 import com.apigate.exceptions.OperationResultErrorLevel;
 import com.apigate.exceptions.OperationResultWarnLevel;
 import com.apigate.exceptions.ResponseCodes;
+import com.apigate.exceptions.internal.ErrorException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
@@ -53,7 +54,22 @@ public class ErrorInfo extends GenericResponseMessageDto{
         String responseReason = "";
         if(ex instanceof OperationResultErrorLevel){
             responseCode = ((OperationResultErrorLevel)ex).getErrorResponseCode().getCode();
-            responseReason = ((AbstractException)ex).getReason();
+            if((ex instanceof ErrorException) && (!((ErrorException)ex).isReasonProvided())){
+                boolean nestedCauseFound = ((ErrorException)ex).getEx().getCause() != null;
+                Throwable exBefore = ((ErrorException)ex).getEx();
+                Throwable exFurther = ((ErrorException)ex).getEx();
+                while (nestedCauseFound){
+                    if(exFurther==null){
+                        nestedCauseFound = false;
+                    }else{
+                        exBefore = exFurther;
+                        exFurther = exFurther.getCause();
+                    }
+                }
+                responseReason = ((AbstractException)ex).getReason() + " | " + exBefore.getMessage();
+            }else{
+                responseReason = ((AbstractException)ex).getReason();
+            }
         }else if(ex instanceof OperationResultWarnLevel){
             status = OperationResult.Status.WARN;
             responseCode = ((OperationResultWarnLevel)ex).getWarnResponseCode().getCode();

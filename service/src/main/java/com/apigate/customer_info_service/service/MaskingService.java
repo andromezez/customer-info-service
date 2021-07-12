@@ -2,16 +2,13 @@ package com.apigate.customer_info_service.service;
 
 import com.apigate.customer_info_service.dto.httprequestbody.masking.UpdateMaskingEntryReqDto;
 import com.apigate.customer_info_service.dto.httpresponsebody.masking.MaskingEntryDto;
-import com.apigate.customer_info_service.dto.httpresponsebody.routing.RoutingEntryDto;
 import com.apigate.customer_info_service.entities.Masking;
 import com.apigate.customer_info_service.entities.MaskingPK;
-import com.apigate.customer_info_service.entities.Routing;
 import com.apigate.customer_info_service.entities.RoutingPK;
 import com.apigate.customer_info_service.repository.MaskingRepository;
 import com.apigate.customer_info_service.repository.RoutingRepository;
-import com.apigate.exceptions.db.DuplicateRecordException;
 import com.apigate.exceptions.db.RecordNotFoundException;
-import com.apigate.exceptions.internal.SystemErrorException;
+import com.apigate.exceptions.internal.ErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,7 +117,7 @@ public class MaskingService {
 
             return result;
         }else{
-            throw new DuplicateRecordException("Masking with clientId and endpointId and jsonPath already exist");
+            throw new ErrorException("Masking with clientId and endpointId and jsonPath already exist");
         }
     }
 

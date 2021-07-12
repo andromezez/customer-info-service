@@ -2,7 +2,7 @@ package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.exceptions.AbstractException;
 import com.apigate.exceptions.HTTPResponseBody.ErrorInfo;
-import com.apigate.exceptions.internal.SystemErrorException;
+import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.HTTPRequestLog;
 import com.apigate.logging.HTTPResponseLog;
 import com.apigate.logging.Logger;
@@ -32,7 +32,7 @@ public class AbstractController {
         if(e instanceof AbstractException){
             abstractException = ((AbstractException) e);
         }else{
-            abstractException = new SystemErrorException(e);
+            abstractException = new ErrorException(e);
         }
         var mapper = ObjectMapperUtils.getMapperInstance();
         ResponseEntity<Object> responseEntity = ResponseEntity

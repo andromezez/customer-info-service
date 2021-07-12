@@ -7,7 +7,7 @@ package com.apigate.exceptions;
 public interface ResponseCodes {
     enum Errors {
 
-        CIS9999("CIS9999", "System error has occurred. Please contact application support"),
+        CIS9999("CIS9999", "Error."),
         CIS9998("CIS9998", "Input Validation Error"),
         CIS9991("CIS9991", "Endpoint doesn't exist. RTFS!"),
         CIS9992("CIS9992", "Wrong header"),

@@ -3,9 +3,7 @@ package com.apigate.exceptions.handler;
 import com.apigate.exceptions.AbstractException;
 import com.apigate.exceptions.HTTPResponseBody.ErrorInfo;
 import com.apigate.exceptions.business.EndpointDoesntExistException;
-import com.apigate.exceptions.business.HeaderValidationException;
-import com.apigate.exceptions.business.InputValidationException;
-import com.apigate.exceptions.internal.SystemErrorException;
+import com.apigate.exceptions.internal.ErrorException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -32,7 +30,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<ErrorInfo> handle(HttpServletRequest request, MethodArgumentNotValidException e) {
-        InputValidationException ex = new InputValidationException(e.getBindingResult().getFieldError().getDefaultMessage());
+        ErrorException ex = new ErrorException(e.getBindingResult().getFieldError().getDefaultMessage());
         ex.log();
         ResponseEntity<ErrorInfo> response = ResponseEntity.status(ex.getStatus()).body(ex.getErrorInfo(request));
         return response;
@@ -40,7 +38,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     ResponseEntity<ErrorInfo> handle(HttpServletRequest request, ConstraintViolationException e) {
-        InputValidationException ex = new InputValidationException(e.getConstraintViolations().stream().findFirst().get().getMessage());
+        ErrorException ex = new ErrorException(e.getConstraintViolations().stream().findFirst().get().getMessage());
         ex.log();
         ResponseEntity<ErrorInfo> response = ResponseEntity.status(ex.getStatus()).body(ex.getErrorInfo(request));
         return response;
@@ -48,7 +46,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     ResponseEntity<ErrorInfo> handle(HttpServletRequest request, MissingServletRequestParameterException e) {
-        InputValidationException ex = new InputValidationException(e.getMessage());
+        ErrorException ex = new ErrorException(e.getMessage());
         ex.log();
         ResponseEntity<ErrorInfo> response = ResponseEntity.status(ex.getStatus()).body(ex.getErrorInfo(request));
         return response;
@@ -64,7 +62,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(HttpMediaTypeException.class)
     ResponseEntity<ErrorInfo> handle(HttpServletRequest request, HttpMediaTypeException e) {
-        HeaderValidationException ex = new HeaderValidationException(e.getMessage());
+        ErrorException ex = new ErrorException(e.getMessage());
         ex.log();
         ResponseEntity<ErrorInfo> response = ResponseEntity.status(ex.getStatus()).body(ex.getErrorInfo(request));
         return response;
@@ -72,7 +70,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<ErrorInfo> handle(HttpServletRequest request, Exception e) {
-        SystemErrorException ex = new SystemErrorException(e);
+        ErrorException ex = new ErrorException(e);
         ex.log();
         ResponseEntity<ErrorInfo> response = ResponseEntity.status(ex.getStatus()).body(ex.getErrorInfo(request));
         return response;

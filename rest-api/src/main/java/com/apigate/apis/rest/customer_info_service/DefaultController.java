@@ -4,8 +4,7 @@ import com.apigate.apis.rest.util.HTTPUtils;
 import com.apigate.customer_info_service.service.CacheService;
 import com.apigate.customer_info_service.service.OperatorEndpointService;
 import com.apigate.customer_info_service.service.RoutingService;
-import com.apigate.exceptions.business.BusinessValidationException;
-import com.apigate.exceptions.internal.SystemErrorException;
+import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.ServicesLog;
 import com.apigate.utils.httpclient.HttpClientUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,15 +92,15 @@ public class DefaultController extends AbstractController{
                                     + "\n    reason phrase : " + httpResponse.getReasonPhrase()
                                     + "\n    response body : " + httpResponse.getBody()
                                     + "\n    response headers : " + HttpClientUtils.HttpResponse.toString(httpResponse.getHeaders());
-                            var errorForLog = new BusinessValidationException(errorDetails);
+                            var errorForLog = new ErrorException(errorDetails);
                             ServicesLog.getInstance().logError(errorForLog);
 
-                            var errorForClient = new BusinessValidationException(errorMessage);
+                            var errorForClient = new ErrorException(errorMessage);
                             throw errorForClient;
                         }
                     }
                 }else{
-                    throw new BusinessValidationException("Can't find routing for partnerId " + partnerId
+                    throw new ErrorException("Can't find routing for partnerId " + partnerId
                             + " and URI " + request.getRequestURI() + " , under " + RoutingService.LOCK_ON_OPERATOR + " operator.");
                 }
             }
@@ -124,7 +123,7 @@ public class DefaultController extends AbstractController{
             initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
             responseEntity = initiatedData.responseEntity;
 
-            throw new SystemErrorException(new Exception("Intentionally throw exception to test GCP stackdriver output on printing exception's stack traces"));
+            throw new ErrorException(new Exception("Intentionally throw exception to test GCP stackdriver output on printing exception's stack traces"));
 
         }catch (Exception e){
             ExceptionResponse exceptionResponse = processException(request, e);

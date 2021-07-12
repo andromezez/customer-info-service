@@ -7,7 +7,7 @@ import com.apigate.customer_info_service.dto.httpresponsebody.routing.RoutingRes
 import com.apigate.customer_info_service.dto.validator.ValidationSequence;
 import com.apigate.customer_info_service.service.RoutingService;
 import com.apigate.exceptions.HTTPResponseBody.OperationResult;
-import com.apigate.exceptions.business.InputValidationException;
+import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.HTTPRequestLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,13 +81,13 @@ public class RoutingConfigurationAPI extends AbstractController{
 
         try{
             if(StringUtils.isAnyBlank(clientId, endpointId)){
-                throw new InputValidationException("Header parameters Client-Id and Endpoint-Id must have value");
+                throw new ErrorException("Header parameters Client-Id and Endpoint-Id must have value");
             }
 
             if(requestBody == null){
-                throw new InputValidationException("Request Body can't be empty");
+                throw new ErrorException("Request Body can't be empty");
             } else if(bindingResult.hasErrors()){
-                throw new InputValidationException(bindingResult.getFieldError().getDefaultMessage());
+                throw new ErrorException(bindingResult.getFieldError().getDefaultMessage());
             }
 
             var routingEntryDto = routingService.update(clientId,endpointId,requestBody);
@@ -119,13 +119,13 @@ public class RoutingConfigurationAPI extends AbstractController{
 
         try{
             if(StringUtils.isAnyBlank(clientId, endpointId)){
-                throw new InputValidationException("Header parameters Client-Id and Endpoint-Id must have value");
+                throw new ErrorException("Header parameters Client-Id and Endpoint-Id must have value");
             }
 
             if(requestBody == null){
-                throw new InputValidationException("Request Body can't be empty");
+                throw new ErrorException("Request Body can't be empty");
             } else if(bindingResult.hasErrors()){
-                throw new InputValidationException(bindingResult.getFieldError().getDefaultMessage());
+                throw new ErrorException(bindingResult.getFieldError().getDefaultMessage());
             }
 
             var routingEntryDto = routingService.create(clientId,endpointId,requestBody);

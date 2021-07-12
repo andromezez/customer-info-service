@@ -8,9 +8,8 @@ import com.apigate.customer_info_service.entities.RoutingPK;
 import com.apigate.customer_info_service.repository.ClientRepository;
 import com.apigate.customer_info_service.repository.MnoApiEndpointRepository;
 import com.apigate.customer_info_service.repository.RoutingRepository;
-import com.apigate.exceptions.business.BusinessValidationException;
-import com.apigate.exceptions.db.DuplicateRecordException;
 import com.apigate.exceptions.db.RecordNotFoundException;
+import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.CommonLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,7 +101,7 @@ public class RoutingService {
         }
     }
 
-    public RoutingEntryDto create(String clientId, String mnoApiEndpointId, UpdateRoutingEntryReqDto updateRoutingEntryReqDto) throws DuplicateRecordException, RecordNotFoundException {
+    public RoutingEntryDto create(String clientId, String mnoApiEndpointId, UpdateRoutingEntryReqDto updateRoutingEntryReqDto) throws ErrorException, RecordNotFoundException {
         var clientEntity = clientRepository.findById(clientId);
         var endpointEntity = mnoApiEndpointRepository.findById(mnoApiEndpointId);
 
@@ -124,7 +123,7 @@ public class RoutingService {
 
             return result;
         }else{
-            throw new DuplicateRecordException("Routing clientId and endpointId already exist");
+            throw new ErrorException("Routing clientId and endpointId already exist");
         }
     }
 
@@ -161,7 +160,7 @@ public class RoutingService {
                 return Optional.empty();
             }else{
                 if(routingList.size() > 1){
-                    throw new BusinessValidationException("Internal data error. Found multiple routing for URI " + request.getRequestURI() +
+                    throw new ErrorException("Internal data error. Found multiple routing for URI " + request.getRequestURI() +
                             "and partnerId " + partnerId);
                 }else{
                     return Optional.of(routingList.get(0));

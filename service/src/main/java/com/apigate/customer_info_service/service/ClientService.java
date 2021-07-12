@@ -5,8 +5,8 @@ import com.apigate.customer_info_service.dto.httprequestbody.client.UpdateClient
 import com.apigate.customer_info_service.dto.httpresponsebody.client.ClientEntryDto;
 import com.apigate.customer_info_service.entities.Client;
 import com.apigate.customer_info_service.repository.ClientRepository;
-import com.apigate.exceptions.db.DuplicateRecordException;
 import com.apigate.exceptions.db.RecordNotFoundException;
+import com.apigate.exceptions.internal.ErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +47,7 @@ public class ClientService {
         return fillClientsDto(clientList);
     }
 
-    public ClientEntryDto create(CreateClientEntryReqDto createClientEntryReqDto) throws DuplicateRecordException{
+    public ClientEntryDto create(CreateClientEntryReqDto createClientEntryReqDto) throws ErrorException {
         if(clientRepository.findByIdOrPartnerIdContainingIgnoreCase(createClientEntryReqDto.getId(), createClientEntryReqDto.getPartnerId()).isEmpty()){
             var clientEntity = new Client();
             clientEntity.setId(createClientEntryReqDto.getId());
@@ -65,11 +65,11 @@ public class ClientService {
 
             return result;
         }else{
-            throw new DuplicateRecordException("id or partnerId already exist");
+            throw new ErrorException("id or partnerId already exist");
         }
     }
 
-    public ClientEntryDto update(String id, UpdateClientEntryReqDto updateClientEntryReqDto) throws DuplicateRecordException, RecordNotFoundException{
+    public ClientEntryDto update(String id, UpdateClientEntryReqDto updateClientEntryReqDto) throws ErrorException, RecordNotFoundException{
         if(clientRepository.findByIdNotAndPartnerIdContainingIgnoreCase(id, updateClientEntryReqDto.getPartnerId()).isEmpty()){
             var existingClientDB = clientRepository.findById(id);
             if(existingClientDB.isPresent()){
@@ -96,7 +96,7 @@ public class ClientService {
                 throw new RecordNotFoundException(id);
             }
         }else{
-            throw new DuplicateRecordException("partnerId owned by other resource");
+            throw new ErrorException("partnerId owned by other resource");
         }
     }
 }
