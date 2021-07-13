@@ -5,6 +5,7 @@ import com.apigate.customer_info_service.dto.httprequestbody.operator.MnoEntryRe
 import com.apigate.customer_info_service.entities.Mno;
 import com.apigate.customer_info_service.repository.MnoApiEndpointRepository;
 import com.apigate.customer_info_service.repository.MnoRepository;
+import com.apigate.customer_info_service.service.token_management.TokenManagement;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,12 @@ public class OperatorService {
 
     @Autowired
     private OperatorEndpointService endpointService;
+
+    @Autowired
+    private TokenManagement tokenManagement;
+
+    @Autowired
+    private CacheService cacheService;
 
     private List<MnoEntryDto> fillOperatorsDto(List<Mno> mnoList){
         List<MnoEntryDto> result = new ArrayList<>(1);
@@ -77,5 +84,10 @@ public class OperatorService {
         for(var endpoint : endpointList){
             endpointService.clearCache(endpoint);
         }
+    }
+
+    public String getAccessToken(Mno mno){
+        String redisKey = tokenManagement.getTokenAccessRedisKey(mno);
+        return cacheService.getFromCache(redisKey);
     }
 }

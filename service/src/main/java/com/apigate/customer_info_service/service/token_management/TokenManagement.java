@@ -19,7 +19,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Bayu Utomo
  * @date 6/7/2021 11:29 AM
  */
-@Component
+@Service
 public class TokenManagement {
 
     @Autowired
@@ -44,7 +44,7 @@ public class TokenManagement {
     private TaskScheduler taskScheduler;
 
 
-    private String getTokenAccessRedisKey(Mno mno) {
+    public String getTokenAccessRedisKey(Mno mno) {
         return "token:" + mno.getId() + ":access";
     }
 

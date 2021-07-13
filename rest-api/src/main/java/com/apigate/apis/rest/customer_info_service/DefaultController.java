@@ -2,12 +2,14 @@ package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.apis.rest.util.HTTPUtils;
 import com.apigate.customer_info_service.service.OperatorEndpointService;
+import com.apigate.customer_info_service.service.OperatorService;
 import com.apigate.customer_info_service.service.RoutingService;
 import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.ServicesLog;
 import com.apigate.utils.httpclient.HttpClientUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,6 +35,9 @@ public class DefaultController extends AbstractController{
 
     @Autowired
     private OperatorEndpointService operatorEndpointService;
+
+    @Autowired
+    private OperatorService operatorService;
 
     @RequestMapping(value="**")
     public ResponseEntity getAnythingElse(@RequestHeader(name = "application_id", required = false) String partnerId, HttpServletRequest request) {
@@ -69,6 +74,7 @@ public class DefaultController extends AbstractController{
                         ServicesLog.getInstance().logInfo("Cache not found. Cache is " + cacheResponse);
                         String endpoint = HttpClientUtils.subtitutePath(new URL(routing.get().getMnoApiEndpoint().getUrl()), request);
                         HttpGet httpGet = new HttpGet(endpoint);
+                        httpGet.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + operatorService.getAccessToken(routing.get().getMnoApiEndpoint().getMnoId()));
                         var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
                             try{
