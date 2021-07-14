@@ -78,7 +78,7 @@ public class DefaultController extends AbstractController{
                         var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
                             try{
-                                if(httpResponse.getCode() == HttpStatus.OK.value()){
+                                if (routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
                                     routingService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,httpResponse.getBody());
                                 }
                             }catch (Exception e){
