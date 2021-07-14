@@ -1,7 +1,7 @@
 pipeline {
     
     agent {
-      label 'jenkins-slave'
+      label 'jenkins-slave-jdk16-0-1'
   }
     
     options {
