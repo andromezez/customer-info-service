@@ -1,13 +1,9 @@
 package com.apigate.customer_info_service.dto.httpresponsebody.operator_endpoint;
 
-import com.apigate.config.Config;
 import com.apigate.customer_info_service.entities.MnoApiEndpoint;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
-import java.time.ZonedDateTime;
 
 /**
  * @author Bayu Utomo

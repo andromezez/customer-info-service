@@ -2,8 +2,6 @@ package com.apigate.logging;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.util.Arrays;
-
 /**
  * @author Bayu Utomo
  * @date 4/12/2020 10:27 PM

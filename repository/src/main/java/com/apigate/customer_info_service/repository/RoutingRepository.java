@@ -2,14 +2,11 @@ package com.apigate.customer_info_service.repository;
 
 import com.apigate.customer_info_service.entities.Routing;
 import com.apigate.customer_info_service.entities.RoutingPK;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface RoutingRepository extends CustomRepository<Routing, RoutingPK> {

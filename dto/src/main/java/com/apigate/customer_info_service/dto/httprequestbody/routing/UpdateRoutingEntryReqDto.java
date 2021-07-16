@@ -1,14 +1,11 @@
 package com.apigate.customer_info_service.dto.httprequestbody.routing;
 
 import com.apigate.customer_info_service.dto.validator.Step1;
-import com.apigate.customer_info_service.dto.validator.Step2;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * @author Bayu Utomo
