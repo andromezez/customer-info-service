@@ -60,6 +60,10 @@ public class TokenManagement {
         return cacheService.getRemainingTTL(getTokenAccessRedisKey(mno));
     }
 
+    public String getLockRedisKey(Mno mno) {
+        return "token:" + mno.getId() + ":processing";
+    }
+
     @EventListener
     public void initTokenAfterStartup(ApplicationReadyEvent event) {
         taskScheduler.scheduleWithFixedDelay(new Runnable() {
@@ -102,7 +106,10 @@ public class TokenManagement {
         ServicesLog.getInstance().logInfo("Token management trying to refresh token for operator " + mno.getName());
         var expireInFromCache = getTokenExpirePeriod(mno);
         boolean cacheHasBeenRenewed = false;
-        if(expireInFromCache.getSeconds() <= Config.getTtlLeftBeforeRefreshToken().getSeconds()){ // try to refresh or create even if the token cache doesn't exist
+
+        boolean lockAcquired = cacheService.createLock(getLockRedisKey(mno));
+
+        if(lockAcquired && (expireInFromCache.getSeconds() <= Config.getTtlLeftBeforeRefreshToken().getSeconds())){ // try to refresh or create even if the token cache doesn't exist
 
             //first call token refresh.
             String refreshTokenFromCache = cacheService.getFromCache(getTokenRefreshRedisKey(mno));
@@ -180,10 +187,13 @@ public class TokenManagement {
 
                 cacheHasBeenRenewed = true;
             }
+            cacheService.removeLock(getLockRedisKey(mno));
         }
 
         if (!cacheHasBeenRenewed) {
-            if (expireInFromCache.getSeconds() > Config.getTtlLeftBeforeRefreshToken().getSeconds()) { //no renew, since token cache still valid for more than the expiry limit
+            if(!lockAcquired){
+                ServicesLog.getInstance().logInfo("Unable to acquire the lock. Other instance might been running the process.");
+            }else if (expireInFromCache.getSeconds() > Config.getTtlLeftBeforeRefreshToken().getSeconds()) { //no renew, since token cache still valid for more than the expiry limit
                 ServicesLog.getInstance().logInfo("No refresh token. Token still valid for " + expireInFromCache.getSeconds() + " seconds. Not reaching the expiry limit.");
             } else if (expireInFromCache.getSeconds() > 0) { //no renew (process failed), but there is still existing cache
                 ServicesLog.getInstance().logError(new Exception("Failure on the process. Token is not refreshed. Token will expire in approx " + expireInFromCache.getSeconds() + " seconds."));

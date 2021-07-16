@@ -87,6 +87,17 @@ public class OperatorService {
     }
 
     public String getAccessToken(Mno mno){
+        for(int i=1;i<=3;i++){
+            if(cacheService.isLocked(tokenManagement.getLockRedisKey(mno))){
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+            }else{
+                break;
+            }
+        }
         String redisKey = tokenManagement.getTokenAccessRedisKey(mno);
         return cacheService.getFromCache(redisKey);
     }

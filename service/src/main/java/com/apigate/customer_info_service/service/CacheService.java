@@ -1,6 +1,7 @@
 package com.apigate.customer_info_service.service;
 
 import com.apigate.logging.ServicesLog;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,26 @@ public class CacheService {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    public boolean createLock(String key){
+        try{
+            return redisTemplate.opsForValue().setIfAbsent(key, "true", Duration.ofSeconds(60));
+        }catch (Exception e){
+            ServicesLog.getInstance().logError(e);
+        }
+        return false;
+    }
+
+    public boolean removeLock(String key){
+        return removeCache(key);
+    }
+
+    public boolean isLocked(String key){
+        return StringUtils.isNotBlank(getFromCache(key));
+    }
+
     public void createCache(String key, String value, int expireInSeconds){
         try{
-            redisTemplate.opsForValue().set(key, value);
-            redisTemplate.expire(key, Duration.ofSeconds(expireInSeconds));
+            redisTemplate.opsForValue().set(key, value, Duration.ofSeconds(expireInSeconds));
         }catch (Exception e){
             ServicesLog.getInstance().logError(e);
         }
