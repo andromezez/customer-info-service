@@ -28,11 +28,11 @@ public class HTTPRequestLog  extends AbstractLogger {
     private StringBuilder buildLogMsg(){
         StringBuilder logMsg = new StringBuilder();
         logMsg.append(" [REQUEST] ");
-        logMsg.append(" [HTTP_METHOD: " + http_method + "] ");
-        logMsg.append(" [REQUEST_ID: " + requestId + "] ");
-        logMsg.append(" [USERNAME: " + username + "] ");
-        logMsg.append(" [URL: " + urlEndpoint + "] ");
-        logMsg.append(" [BODY: " + requestBody + "] ");
+        logMsg.append(" [HTTP_METHOD: ").append(http_method).append("] ");
+        logMsg.append(" [REQUEST_ID: ").append(requestId).append("] ");
+        logMsg.append(" [USERNAME: ").append(username).append("] ");
+        logMsg.append(" [URL: ").append(urlEndpoint).append("] ");
+        logMsg.append(" [BODY: ").append(requestBody).append("] ");
         return logMsg;
     }
 

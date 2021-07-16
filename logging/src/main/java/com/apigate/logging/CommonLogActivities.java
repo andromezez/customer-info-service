@@ -43,7 +43,7 @@ public class CommonLogActivities extends HttpFilter {
             StringBuilder headersInfo = new StringBuilder("Request Headers :\n");
                 request.getHeaderNames().asIterator().forEachRemaining(headerName -> {
                     request.getHeaders(headerName).asIterator().forEachRemaining(value -> {
-                        headersInfo.append("    "+headerName+"' = " + value + "\n");
+                        headersInfo.append("    ").append(headerName).append("' = ").append(value).append("\n");
                     });
                 });
             httpRequestLogger.info(headersInfo.toString());
@@ -55,8 +55,8 @@ public class CommonLogActivities extends HttpFilter {
             Duration duration = Duration.between(start, end);
             StringBuilder str = new StringBuilder();
             str.append("END");
-            str.append(" [METHOD: " + request.getMethod() +"]");
-            str.append(" [ENDPOINT: " + request.getRequestURL().toString() + "]");
+            str.append(" [METHOD: ").append(request.getMethod()).append("]");
+            str.append(" [ENDPOINT: ").append(request.getRequestURL().toString()).append("]");
 
             String durationStr = DurationFormatUtils.formatDurationHMS(duration.toMillis());
             //String[] timeData = durationStr.split(":");

@@ -23,10 +23,10 @@ public class HTTPResponseLog extends AbstractLogger{
     private StringBuilder buildLogMsg(){
         StringBuilder logMsg = new StringBuilder();
         logMsg.append(" [RESPONSE] ");
-        logMsg.append(" [REQUEST_ID: " + requestLog.getRequestId() + "] ");
-        logMsg.append(" [USERNAME: " + requestLog.getUsername() + "] ");
-        logMsg.append(" [HTTP_STATUS: " + httpStatus + "] ");
-        logMsg.append(" [BODY: " + responseBody + "] ");
+        logMsg.append(" [REQUEST_ID: ").append(requestLog.getRequestId()).append("] ");
+        logMsg.append(" [USERNAME: ").append(requestLog.getUsername()).append("] ");
+        logMsg.append(" [HTTP_STATUS: ").append(httpStatus).append("] ");
+        logMsg.append(" [BODY: ").append(responseBody).append("] ");
         return logMsg;
     }
 
