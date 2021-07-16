@@ -169,10 +169,9 @@ public class Mno implements Serializable {
     @Override
     public boolean equals(Object object) {
         // Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Mno)) {
+        if (!(object instanceof Mno other)) {
             return false;
         }
-        Mno other = (Mno) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

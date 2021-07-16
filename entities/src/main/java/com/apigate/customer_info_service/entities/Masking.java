@@ -125,10 +125,9 @@ public class Masking implements Serializable {
     @Override
     public boolean equals(Object object) {
         // Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Masking)) {
+        if (!(object instanceof Masking other)) {
             return false;
         }
-        Masking other = (Masking) object;
         if ((this.maskingPK == null && other.maskingPK != null) || (this.maskingPK != null && !this.maskingPK.equals(other.maskingPK))) {
             return false;
         }

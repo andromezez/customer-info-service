@@ -169,10 +169,9 @@ public class Routing implements Serializable {
     @Override
     public boolean equals(Object object) {
         // Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Routing)) {
+        if (!(object instanceof Routing other)) {
             return false;
         }
-        Routing other = (Routing) object;
         if ((this.routingPK == null && other.routingPK != null) || (this.routingPK != null && !this.routingPK.equals(other.routingPK))) {
             return false;
         }

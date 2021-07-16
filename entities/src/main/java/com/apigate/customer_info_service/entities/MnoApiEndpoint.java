@@ -136,10 +136,9 @@ public class MnoApiEndpoint implements Serializable {
     @Override
     public boolean equals(Object object) {
         // Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof MnoApiEndpoint)) {
+        if (!(object instanceof MnoApiEndpoint other)) {
             return false;
         }
-        MnoApiEndpoint other = (MnoApiEndpoint) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
