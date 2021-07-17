@@ -22,7 +22,7 @@ public class CacheService {
 
     public boolean createLock(String key){
         try{
-            return redisTemplate.opsForValue().setIfAbsent(key, "true", Duration.ofSeconds(60));
+            return redisTemplate.opsForValue().setIfAbsent(key, "true", Duration.ofSeconds(20));
         }catch (Exception e){
             ServicesLog.getInstance().logError(e);
         }
