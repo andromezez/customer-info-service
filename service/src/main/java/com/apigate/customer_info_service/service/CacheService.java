@@ -1,5 +1,6 @@
 package com.apigate.customer_info_service.service;
 
+import com.apigate.config.Config;
 import com.apigate.logging.ServicesLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class CacheService {
 
     public boolean createLock(String key){
         try{
-            return redisTemplate.opsForValue().setIfAbsent(key, "true", Duration.ofSeconds(20));
+            return redisTemplate.opsForValue().setIfAbsent(key, "true", Config.TOKEN_PROCESSING_LOCK_EXPIRY);
         }catch (Exception e){
             ServicesLog.getInstance().logError(e);
         }

@@ -1,5 +1,6 @@
 package com.apigate.customer_info_service.service;
 
+import com.apigate.config.Config;
 import com.apigate.customer_info_service.dto.httpresponsebody.operator.MnoEntryDto;
 import com.apigate.customer_info_service.dto.httprequestbody.operator.MnoEntryReqDto;
 import com.apigate.customer_info_service.entities.Mno;
@@ -87,10 +88,11 @@ public class OperatorService {
     }
 
     public String getAccessToken(Mno mno){
-        for(int i=1;i<=3;i++){
+        int n=3;
+        for(int i=1;i<=n;i++){
             if(cacheService.isLocked(tokenManagement.getLockRedisKey(mno))){
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(Config.TOKEN_PROCESSING_LOCK_EXPIRY.toMillis()/n);
                 } catch (InterruptedException e) {
                     //ignore
                 }

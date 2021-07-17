@@ -23,6 +23,8 @@ public class Config {
     private static String APIGATE_CUST_INFO_MASK = "********";
     private static String APIGATE_CUST_INFO_OPERATOR_ENDPOINT_PATHVARIABLE_PATTERN_MSISDN = "msisdn";
 
+    public static final Duration TOKEN_PROCESSING_LOCK_EXPIRY = Duration.ofSeconds(20);
+
     /**
      * Gets apigate http client timeout.
      *
