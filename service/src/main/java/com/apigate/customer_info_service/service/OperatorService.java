@@ -88,11 +88,10 @@ public class OperatorService {
     }
 
     public String getAccessToken(Mno mno){
-        int n=3;
-        for(int i=1;i<=n;i++){
+        for(int i=1;i<=Config.MAX_RETRY_GET_ACCESS_TOKEN_DELAY;i++){
             if(cacheService.isLocked(tokenManagement.getLockRedisKey(mno))){
                 try {
-                    Thread.sleep(Config.TOKEN_PROCESSING_LOCK_EXPIRY.toMillis()/n);
+                    Thread.sleep(Config.GET_ACCESS_TOKEN_DELAY_WHEN_LOCKED.toMillis());
                 } catch (InterruptedException e) {
                     //ignore
                 }

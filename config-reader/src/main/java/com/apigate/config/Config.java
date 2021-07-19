@@ -23,7 +23,9 @@ public class Config {
     private static String APIGATE_CUST_INFO_MASK = "********";
     private static String APIGATE_CUST_INFO_OPERATOR_ENDPOINT_PATHVARIABLE_PATTERN_MSISDN = "msisdn";
 
-    public static final Duration TOKEN_PROCESSING_LOCK_EXPIRY = Duration.ofSeconds(20);
+    public static final Duration TOKEN_PROCESSING_LOCK_EXPIRY = Duration.ofSeconds(10);
+    public static final Duration GET_ACCESS_TOKEN_DELAY_WHEN_LOCKED = Duration.ofSeconds(1);
+    public static final int MAX_RETRY_GET_ACCESS_TOKEN_DELAY = 10;
 
     /**
      * Gets apigate http client timeout.
