@@ -74,6 +74,13 @@ public class MaskingService {
 
                 result.parseFrom(maskingDBAfterUpdate);
             }else{
+                var maskingPKForReplace = new MaskingPK(clientId, endpointId, updateMaskingEntryReqDto.getJsonPath());
+                var existingMaskingDBForReplace = maskingRepository.findById(maskingPKForReplace);
+
+                if (existingMaskingDBForReplace.isPresent()) {
+                    throw new ErrorException("Existing record already exist for " + maskingPKForReplace);
+                }
+
                 Masking newMasking = new Masking(new MaskingPK(clientId, endpointId, updateMaskingEntryReqDto.getJsonPath()),
                                             updateMaskingEntryReqDto.isAtLog(),
                                             updateMaskingEntryReqDto.isAtResponse(),
