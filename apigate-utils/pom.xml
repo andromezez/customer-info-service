@@ -22,5 +22,10 @@
             <artifactId>apigate-exception-handling</artifactId>
             <version>${project.version}</version>
         </dependency>
+                <dependency>
+            <groupId>com.apigate</groupId>
+            <artifactId>apigate-customer-info-service-dto</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
