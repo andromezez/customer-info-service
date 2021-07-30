@@ -72,7 +72,8 @@ public class DefaultController extends AbstractController{
 
                     if(StringUtils.isNotBlank(cacheResponse)){
                         ServicesLog.getInstance().logInfo("Cache is found");
-                        responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(cacheResponse);
+                        String responseBodyAfterMasking = maskingService.maskTheResponse(routing.get(), cacheResponse);
+                        responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(responseBodyAfterMasking);
                     }else{
                         ServicesLog.getInstance().logInfo("Cache not found. Cache is " + cacheResponse);
                         String endpoint = HttpClientUtils.subtitutePath(new URL(routing.get().getMnoApiEndpoint().getUrl()), request);
@@ -83,8 +84,8 @@ public class DefaultController extends AbstractController{
                             String responseBody = httpResponse.getBody();
                             try{
                                 if (routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
-                                    responseBody = maskingService.maskTheResponse(routing.get(), responseBody);
                                     routingService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,responseBody);
+                                    responseBody = maskingService.maskTheResponse(routing.get(), responseBody);
                                 }
                             }catch (Exception e){
                                 ServicesLog.getInstance().logError(e);
