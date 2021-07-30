@@ -1,14 +1,18 @@
 package com.apigate.customer_info_service.service;
 
+import com.apigate.config.Config;
 import com.apigate.customer_info_service.dto.httprequestbody.masking.UpdateMaskingEntryReqDto;
 import com.apigate.customer_info_service.dto.httpresponsebody.masking.MaskingEntryDto;
 import com.apigate.customer_info_service.entities.Masking;
 import com.apigate.customer_info_service.entities.MaskingPK;
+import com.apigate.customer_info_service.entities.Routing;
 import com.apigate.customer_info_service.entities.RoutingPK;
 import com.apigate.customer_info_service.repository.MaskingRepository;
 import com.apigate.customer_info_service.repository.RoutingRepository;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import com.apigate.exceptions.internal.ErrorException;
+import com.apigate.logging.ServicesLog;
+import com.apigate.utils.masking.ResponseMaskingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,4 +132,25 @@ public class MaskingService {
         }
     }
 
+    public String maskTheResponse(Routing routing, String responseBody) {
+        String maskingValue = Config.getApigateCustInfoMask();
+
+        if (routing.getMaskingCollection() == null || routing.getMaskingCollection().size() == 0) {
+            ServicesLog.getInstance().logInfo("No masking configurations found for the client");
+            return responseBody;
+        }
+
+        var jsonPath = new ArrayList<String>(1);
+
+        for(var maskDB : routing.getMaskingCollection()){
+            if(maskDB.isAtResponse()){
+                jsonPath.add(maskDB.getMaskingPK().getJsonPath());
+            }
+        }
+
+        responseBody = ResponseMaskingUtils.responseMasking(jsonPath,
+                maskingValue, responseBody);
+
+        return responseBody;
+    }
 }

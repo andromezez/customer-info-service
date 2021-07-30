@@ -1,8 +1,6 @@
 package com.apigate.apis.rest.customer_info_service;
 
 import com.apigate.apis.rest.util.HTTPUtils;
-import com.apigate.config.Config;
-import com.apigate.customer_info_service.dto.httpresponsebody.masking.MaskingEntryDto;
 import com.apigate.customer_info_service.service.MaskingService;
 import com.apigate.customer_info_service.service.OperatorEndpointService;
 import com.apigate.customer_info_service.service.OperatorService;
@@ -10,8 +8,6 @@ import com.apigate.customer_info_service.service.RoutingService;
 import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.ServicesLog;
 import com.apigate.utils.httpclient.HttpClientUtils;
-import com.apigate.utils.masking.ResponseMaskingUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.HttpHeaders;
@@ -26,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URL;
-import java.util.List;
 
 /**
  * @author Bayu Utomo
@@ -44,7 +39,7 @@ public class DefaultController extends AbstractController{
 
     @Autowired
     private OperatorService operatorService;
-    
+
     @Autowired
     private MaskingService maskingService;
 
@@ -77,21 +72,7 @@ public class DefaultController extends AbstractController{
 
                     if(StringUtils.isNotBlank(cacheResponse)){
                         ServicesLog.getInstance().logInfo("Cache is found");
-                        
-                        //Response masking : cached
-                        
-                        List<MaskingEntryDto> clientMaskingConfig = maskingService.getMaskingByClientId(partnerId);
-                        
-                        String maskingValue = Config.getApigateCustInfoMask();
-                        
-                        if(clientMaskingConfig.size()==0) {
-                        	ServicesLog.getInstance().logInfo("No masking configurations found for the client");
-                        }  
-                        
-                        String jsonString = ResponseMaskingUtils.responseMasking(clientMaskingConfig, 
-                        		maskingValue,cacheResponse);
-                        
-                        responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonString);
+                        responseEntity = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(cacheResponse);
                     }else{
                         ServicesLog.getInstance().logInfo("Cache not found. Cache is " + cacheResponse);
                         String endpoint = HttpClientUtils.subtitutePath(new URL(routing.get().getMnoApiEndpoint().getUrl()), request);
@@ -99,27 +80,16 @@ public class DefaultController extends AbstractController{
                         httpGet.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + operatorService.getAccessToken(routing.get().getMnoApiEndpoint().getMnoId()));
                         var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
+                            String responseBody = httpResponse.getBody();
                             try{
                                 if (routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
-                                    routingService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,httpResponse.getBody());
+                                    responseBody = maskingService.maskTheResponse(routing.get(), responseBody);
+                                    routingService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,responseBody);
                                 }
                             }catch (Exception e){
                                 ServicesLog.getInstance().logError(e);
                             }
-                           
-                            //Response masking
-                            
-                            List<MaskingEntryDto> clientMaskingConfig = maskingService.getMaskingByClientId(partnerId);
-                            String maskingValue = Config.getApigateCustInfoMask();
-                            
-                            if(clientMaskingConfig.size()==0) {
-                            	ServicesLog.getInstance().logInfo("No masking configurations found for the client");
-                            }  
-                            
-                            String jsonString = ResponseMaskingUtils.responseMasking(clientMaskingConfig, 
-                            		maskingValue,httpResponse.getBody());
-                                                        
-                            responseEntity = ResponseEntity.status(HttpStatus.valueOf(httpResponse.getCode())).contentType(MediaType.APPLICATION_JSON).body(jsonString);
+                            responseEntity = ResponseEntity.status(HttpStatus.valueOf(httpResponse.getCode())).contentType(MediaType.APPLICATION_JSON).body(responseBody);
                         }else{
                             String errorMessage = "Operator endpoint " + routing.get().getMnoApiEndpoint().getUrl()
                                     + " doesn't return proper response.";
