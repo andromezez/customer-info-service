@@ -83,7 +83,11 @@ public class MaskingPK implements Serializable {
         if (!Objects.equals(getClass(), obj.getClass())) {
             return false;
         }
-        MaskingPK other = (MaskingPK) obj;
+
+        if(!(obj instanceof MaskingPK other)){
+            return false;
+        }
+
         if (!Objects.equals(this.getClientId(), other.getClientId())) {
             return false;
         }

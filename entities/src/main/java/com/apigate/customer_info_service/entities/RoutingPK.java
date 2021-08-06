@@ -67,7 +67,11 @@ public class RoutingPK implements Serializable {
         if (!Objects.equals(getClass(), obj.getClass())) {
             return false;
         }
-        RoutingPK other = (RoutingPK) obj;
+
+        if(!(obj instanceof RoutingPK other)){
+            return false;
+        }
+
         if (!Objects.equals(this.getClientId(), other.getClientId())) {
             return false;
         }
