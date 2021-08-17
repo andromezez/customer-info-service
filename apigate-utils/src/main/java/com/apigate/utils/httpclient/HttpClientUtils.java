@@ -1,6 +1,6 @@
 package com.apigate.utils.httpclient;
 
-import com.apigate.logging.ServicesLog;
+import com.apigate.logging.HttpClientLog;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.TextStringBuilder;
@@ -79,7 +79,7 @@ public class HttpClientUtils {
             requestLog.append(" and request body ").append(requestBody);
         }
 
-        ServicesLog.getInstance().logInfo(requestLog.toString() );
+        HttpClientLog.getInstance().logSentRequest(requestLog.toString() );
         try (CloseableHttpResponse httpResponse = HttpClientSingleton.getInstance().execute(httpRequest)) {
 
             HttpEntity entity = httpResponse.getEntity();
@@ -89,7 +89,7 @@ public class HttpClientUtils {
             result.setReasonPhrase(httpResponse.getReasonPhrase());
             result.setHeaders(httpResponse.getHeaders());
 
-            ServicesLog.getInstance().logInfo("Receive http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase() + " with response body " + result.getBody());
+            HttpClientLog.getInstance().logReceivedResponse("Receive http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase() + " with response body " + result.getBody());
             // do something useful with the response body
             // and ensure it is fully consumed
             EntityUtils.consume(entity);
