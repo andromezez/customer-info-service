@@ -12,6 +12,7 @@
     </preConditions>
 
     <include file="v1.0.0/main.xml" relativeToChangelogFile="true"/>
+    <include file="v2.0.0/main.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
 

@@ -1,0 +1,18 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet  id="upgrade_version_2.0.0" author="bayu">
+        <sql dbms="postgresql">
+            insert into version (version,DEPLOYED_AT) values ('2.0.0',now())
+        </sql>
+        <comment>upgrade the db version to version 2.0.0</comment>
+        <rollback>
+            <delete tableName="version">
+                <where>version='2.0.0'</where>
+            </delete>
+            <output  target="STDOUT">rollback delete record 2.0.0 table version</output>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

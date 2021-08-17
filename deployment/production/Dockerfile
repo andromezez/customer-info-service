@@ -1,4 +1,4 @@
 FROM openjdk:16.0.1-slim
-COPY application-start/target/customer-info-service-application-start-1.1.1.jar customer-info-service-application-start-1.1.1.jar
+COPY application-start/target/customer-info-service-application-start-2.0.0.jar customer-info-service-application-start-2.0.0.jar
 EXPOSE 8090 8091
-ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-Dsun.jnu.encoding=UTF-8", "-jar", "/customer-info-service-application-start-1.1.1.jar"]
+ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-Dsun.jnu.encoding=UTF-8", "-jar", "/customer-info-service-application-start-2.0.0.jar"]
