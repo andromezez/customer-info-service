@@ -63,9 +63,24 @@ public class HttpClientUtils {
         HttpResponse result = new HttpResponse();
 
         URI uri = httpRequest.getUri();
-        ServicesLog.getInstance().logInfo("Sending http "+ httpRequest.getMethod() +" request to " + uri.toString());
+
+        var headerStr = new StringBuilder();
+        headerStr.append('{');
+        for(var header : httpRequest.getHeaders()){
+            headerStr.append('[').append(header.getName()).append('=').append(header.getValue()).append(']');
+        }
+        headerStr.append('}');
+
+        var requestLog = new StringBuilder();
+        requestLog.append("Sending http ").append( httpRequest.getMethod()).append(" request to ") .append(uri.toString()).append(" with headers ").append(headerStr);
+
+        if(httpRequest.getEntity() != null){
+            var requestBody = IOUtils.toString(httpRequest.getEntity().getContent(), StandardCharsets.UTF_8.name());
+            requestLog.append(" and request body ").append(requestBody);
+        }
+
+        ServicesLog.getInstance().logInfo(requestLog.toString() );
         try (CloseableHttpResponse httpResponse = HttpClientSingleton.getInstance().execute(httpRequest)) {
-            ServicesLog.getInstance().logInfo("Receive http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase());
 
             HttpEntity entity = httpResponse.getEntity();
             result.setBody(IOUtils.toString(entity.getContent(), StandardCharsets.UTF_8.name()));
@@ -74,6 +89,7 @@ public class HttpClientUtils {
             result.setReasonPhrase(httpResponse.getReasonPhrase());
             result.setHeaders(httpResponse.getHeaders());
 
+            ServicesLog.getInstance().logInfo("Receive http response " + httpResponse.getCode() + " " + httpResponse.getReasonPhrase() + " with response body " + result.getBody());
             // do something useful with the response body
             // and ensure it is fully consumed
             EntityUtils.consume(entity);

@@ -120,6 +120,7 @@ public class TokenManagement {
                 HttpClientUtils.HttpResponse refreshResponse = null;
 
                 try{
+                    ServicesLog.getInstance().logInfo("Call " + mno.getName() + " backend refresh token");
                     refreshResponse = HttpClientUtils.executeRequest(refreshTokenHttpRequest.getRequest());
                 }catch (Exception e){
                     ServicesLog.getInstance().logError(e);
@@ -154,6 +155,7 @@ public class TokenManagement {
                     HttpClientUtils.HttpResponse createResponse = null;
 
                     try{
+                        ServicesLog.getInstance().logInfo("Call " + mno.getName() + " backend create new token");
                         createResponse = HttpClientUtils.executeRequest(createTokenHttpRequest.getRequest());
                     }catch (Exception e){
                         ServicesLog.getInstance().logError(e);
@@ -166,7 +168,7 @@ public class TokenManagement {
                         ObjectMapper mapper = ObjectMapperUtils.getMapperInstance();
                         CreateTokenResDto createResponseBody = null;
                         try {
-                            createResponseBody = mapper.readValue(refreshResponse.getBody(), CreateTokenResDto.class);
+                            createResponseBody = mapper.readValue(createResponse.getBody(), CreateTokenResDto.class);
                         } catch (JsonProcessingException e) {
                             ServicesLog.getInstance().logError(e);
                         }finally {
