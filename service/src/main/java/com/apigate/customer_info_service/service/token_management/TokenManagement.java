@@ -69,7 +69,8 @@ public class TokenManagement {
         taskScheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                com.apigate.logging.Logger.registerReqId(RequestIDGenerator.generateId());
+                var schedulerProcessId = RequestIDGenerator.generateId();
+                com.apigate.logging.Logger.registerReqId(schedulerProcessId);
                 ServicesLog.getInstance().logInfo("Start Token management scheduler");
                 var mnoList = mnoRepository.findAll();
                 AtomicInteger completedTask = new AtomicInteger(0);
@@ -78,7 +79,10 @@ public class TokenManagement {
                         @Override
                         public void run() {
                             try{
-                                com.apigate.logging.Logger.registerReqId(RequestIDGenerator.generateId());
+                                var renewProcessId = new StringBuilder();
+                                renewProcessId.append('[').append(schedulerProcessId).append(']')
+                                        .append('[').append(RequestIDGenerator.generateId()).append(']');
+                                com.apigate.logging.Logger.registerReqId(renewProcessId.toString());
                                 renewToken(mno);
                             }catch (Exception e){
                                 ServicesLog.getInstance().logError(e);
