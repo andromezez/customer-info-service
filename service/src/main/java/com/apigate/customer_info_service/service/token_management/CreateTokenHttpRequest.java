@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Setter;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
@@ -26,6 +27,7 @@ public class CreateTokenHttpRequest {
     public CreateTokenHttpRequest(String endpoint, String username, String password, String authKey){
         request = new HttpPost(endpoint);
         request.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + authKey);
+        request.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.getMimeType());
 
         List<NameValuePair> formparams = new ArrayList<>();
         formparams.add(new BasicNameValuePair("grant_type", "password"));
