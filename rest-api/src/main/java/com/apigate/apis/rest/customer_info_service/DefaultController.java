@@ -10,6 +10,7 @@ import com.apigate.logging.ServicesLog;
 import com.apigate.utils.httpclient.HttpClientUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,6 +80,8 @@ public class DefaultController extends AbstractController{
                         String endpoint = HttpClientUtils.subtitutePath(new URL(routing.get().getMnoApiEndpoint().getUrl()), request);
                         HttpGet httpGet = new HttpGet(endpoint);
                         httpGet.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + operatorService.getAccessToken(routing.get().getMnoApiEndpoint().getMnoId()));
+                        httpGet.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+                        httpGet.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
                         var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
                             String responseBody = httpResponse.getBody();
