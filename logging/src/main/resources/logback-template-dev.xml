@@ -67,6 +67,21 @@
         </encoder>
     </appender>
 
+    <appender name="HttpClientLog_rolling_appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/HttpClient.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${LOG_DIR}/HttpClient-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- each file should be at most ${MAX_FILE_SIZE}, keep ${MAX_FILE_HISTORY} days worth of history, but at most ${TOTAL_SIZE_CAP} -->
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <maxHistory>${MAX_FILE_HISTORY}</maxHistory>
+            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${COMMON_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
     <!---->
 
 
@@ -89,6 +104,11 @@
     <appender name="ASYNC_ServicesLog" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
         <appender-ref ref="ServicesLog_rolling_appender"/>
+    </appender>
+
+    <appender name="ASYNC_HttpClientLog" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
+        <appender-ref ref="HttpClientLog_rolling_appender"/>
     </appender>
     <!---->
 
@@ -113,6 +133,10 @@
 
     <logger name="com.apigate.logging.ServicesLog" level="INFO">
         <appender-ref ref="ASYNC_ServicesLog" />
+    </logger>
+
+    <logger name="com.apigate.logging.HttpClientLog" level="INFO">
+        <appender-ref ref="ASYNC_HttpClientLog" />
     </logger>
     <!---->
 
