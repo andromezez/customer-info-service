@@ -1,0 +1,44 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet  id="create_redisKey_cachePeriod_column_in_endpoint_table" author="bayu">
+        <addColumn tableName="mno_api_endpoint" >
+            <column name="cache_period" type="INTEGER"/>
+            <column name="redis_key" type="VARCHAR(255)"/>
+        </addColumn>
+        <sql dbms="postgresql">
+            update mno_api_endpoint set redis_key = concat(mno_id,':',id), cache_period = 3600
+        </sql>
+        <addNotNullConstraint columnName="cache_period" constraintName="cache_period_not_null" tableName="mno_api_endpoint" validate="true"/>
+        <addNotNullConstraint columnName="redis_key" constraintName="redis_key_not_null" tableName="mno_api_endpoint" validate="true"/>
+        <comment>moving data from routing table to endpoint table</comment>
+        <rollback>
+            <dropColumn  tableName="mno_api_endpoint">
+                <column  name="cache_period"/>
+                <column  name="redis_key"/>
+            </dropColumn>
+            <output  target="STDOUT">rollback the added column cache_period and redis_key on table mno_api_endpoint</output>
+        </rollback>
+    </changeSet>
+    <changeSet  id="drop_redisKey_cachePeriod_column_in_routing_table" author="bayu">
+        <dropColumn  tableName="routing">
+            <column  name="cache_period"/>
+            <column  name="redis_key"/>
+        </dropColumn>
+        <comment>moving data from routing table to endpoint table</comment>
+        <rollback>
+            <addColumn tableName="routing" >
+                <column name="cache_period" type="INTEGER"/>
+                <column name="redis_key" type="VARCHAR(255)"/>
+            </addColumn>
+            <sql dbms="postgresql">
+                update routing set redis_key = concat(client_id ,':', (select mae.mno_id from mno_api_endpoint mae where mae.id = mno_api_endpoint_id ) ,':' , mno_api_endpoint_id) , cache_period = 3600
+            </sql>
+            <addNotNullConstraint columnName="cache_period" constraintName="cache_period_not_null" tableName="routing" validate="true"/>
+            <addNotNullConstraint columnName="redis_key" constraintName="redis_key_not_null" tableName="routing" validate="true"/>
+            <output  target="STDOUT">rollback the dropped column cache_period and redis_key on table routing</output>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
