@@ -34,4 +34,11 @@ public class MnoApiEndpointEntryDto {
 
     @JsonProperty
     private String operatorId;
+
+    @JsonProperty
+    private String redisKey;
+
+    @JsonProperty
+    private int cachePeriod;
+
 }

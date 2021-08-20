@@ -48,6 +48,17 @@ public class MnoApiEndpoint implements Serializable {
     @Column(name = "name", table = "mno_api_endpoint", nullable = false, length = 50)
     private String name;
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "cache_period", table = "mno_api_endpoint", nullable = false)
+    private int cachePeriod;
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "redis_key", table = "mno_api_endpoint", nullable = false)
+    private String redisKey;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "mno_id", referencedColumnName = "id")
     private Mno mnoId;
@@ -62,12 +73,14 @@ public class MnoApiEndpoint implements Serializable {
         this.id = id;
     }
 
-    public MnoApiEndpoint(String id, String url, ZonedDateTime createdAt, ZonedDateTime updatedAt, String name) {
+    public MnoApiEndpoint(String id, String url, ZonedDateTime createdAt, ZonedDateTime updatedAt, String name, int cachePeriod, String redisKey) {
         this.id = id;
         this.url = url;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.name = name;
+        this.cachePeriod = cachePeriod;
+        this.redisKey = redisKey;
     }
 
     public String getId() {
@@ -124,6 +137,22 @@ public class MnoApiEndpoint implements Serializable {
 
     public void setMnoId(Mno mnoId) {
         this.mnoId = mnoId;
+    }
+
+    public int getCachePeriod() {
+        return cachePeriod;
+    }
+
+    public void setCachePeriod(int cachePeriod) {
+        this.cachePeriod = cachePeriod;
+    }
+
+    public String getRedisKey() {
+        return redisKey;
+    }
+
+    public void setRedisKey(String redisKey) {
+        this.redisKey = redisKey;
     }
 
     @Override

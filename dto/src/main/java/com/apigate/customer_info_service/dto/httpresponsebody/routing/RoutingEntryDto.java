@@ -18,8 +18,6 @@ import java.time.ZonedDateTime;
 @Data
 @JsonInclude
 public class RoutingEntryDto {
-    @JsonProperty
-    private int cachePeriod;
 
     @JsonProperty
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.TIMESTAMP_PATTERN)
@@ -28,9 +26,6 @@ public class RoutingEntryDto {
     @JsonProperty
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Config.TIMESTAMP_PATTERN)
     private ZonedDateTime updatedAt;
-
-    @JsonProperty
-    private String redisKey;
 
     @JsonProperty
     private boolean cacheActive;
@@ -42,10 +37,8 @@ public class RoutingEntryDto {
     private MnoApiEndpointEntryDto endpoint;
 
     public void parseFrom(Routing routing){
-        cachePeriod = routing.getCachePeriod();
         createdAt= routing.getCreatedAt();
         updatedAt = routing.getUpdatedAt();
-        redisKey = routing.getRedisKey();
         cacheActive = routing.isCacheActive();
 
         client = new ClientEntryDto();

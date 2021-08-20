@@ -1,11 +1,10 @@
 package com.apigate.customer_info_service.entities;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
@@ -37,19 +36,8 @@ public class Routing implements Serializable {
 
     @Basic(optional = false)
     @NotNull
-    @Column(name = "cache_period", table = "routing", nullable = false)
-    private int cachePeriod;
-
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "created_at", table = "routing", nullable = false)
     private ZonedDateTime createdAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "redis_key", table = "routing", nullable = false)
-    private String redisKey;
 
     @Basic(optional = false)
     @NotNull
@@ -74,12 +62,10 @@ public class Routing implements Serializable {
         this.routingPK = routingPK;
     }
 
-    public Routing(RoutingPK routingPK, boolean cacheActive, int cachePeriod, ZonedDateTime createdAt, String redisKey, ZonedDateTime updatedAt) {
+    public Routing(RoutingPK routingPK, boolean cacheActive, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.routingPK = routingPK;
         this.cacheActive = cacheActive;
-        this.cachePeriod = cachePeriod;
         this.createdAt = createdAt;
-        this.redisKey = redisKey;
         this.updatedAt = updatedAt;
     }
 
@@ -103,28 +89,12 @@ public class Routing implements Serializable {
         this.cacheActive = cacheActive;
     }
 
-    public int getCachePeriod() {
-        return cachePeriod;
-    }
-
-    public void setCachePeriod(int cachePeriod) {
-        this.cachePeriod = cachePeriod;
-    }
-
     public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public String getRedisKey() {
-        return redisKey;
-    }
-
-    public void setRedisKey(String redisKey) {
-        this.redisKey = redisKey;
     }
 
     public ZonedDateTime getUpdatedAt() {

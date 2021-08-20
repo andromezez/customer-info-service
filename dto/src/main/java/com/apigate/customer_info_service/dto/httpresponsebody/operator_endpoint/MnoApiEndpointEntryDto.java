@@ -23,6 +23,8 @@ public class MnoApiEndpointEntryDto extends com.apigate.customer_info_service.dt
         this.setUpdatedAt(endpoint.getUpdatedAt());
         this.setName(endpoint.getName());
         this.setOperatorId(endpoint.getMnoId().getId());
+        this.setCachePeriod(endpoint.getCachePeriod());
+        this.setRedisKey(endpoint.getRedisKey());
         operator = new MnoEntryDto();
         operator.setId(endpoint.getMnoId().getId());
         operator.setName(endpoint.getMnoId().getName());

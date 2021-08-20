@@ -11,8 +11,6 @@ import com.apigate.customer_info_service.repository.RoutingRepository;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.CommonLog;
-import com.apigate.logging.ServicesLog;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
@@ -39,9 +37,6 @@ public class RoutingService {
 
     @Autowired
     private ClientRepository clientRepository;
-
-    @Autowired
-    private CacheService cacheService;
 
     public static final String LOCK_ON_OPERATOR = "celcom";
 
@@ -87,9 +82,7 @@ public class RoutingService {
         var routingDB = routingRepository.findById(routingPK);
 
         if(routingDB.isPresent()){
-            boolean isActiveBefore = routingDB.get().isCacheActive();
 
-            routingDB.get().setCachePeriod(updateRoutingEntryReqDto.getCachePeriod());
             routingDB.get().setCacheActive(updateRoutingEntryReqDto.isCacheActive());
             routingDB.get().setUpdatedAt(ZonedDateTime.now());
 
@@ -97,10 +90,6 @@ public class RoutingService {
 
             RoutingEntryDto result = new RoutingEntryDto();
             result.parseFrom(routingDBAfterUpdate);
-
-            if ((!routingDBAfterUpdate.isCacheActive()) && (isActiveBefore)) {
-                removeRoutingResponseCache(routingDBAfterUpdate);
-            }
 
             return result;
         }else{
@@ -119,8 +108,7 @@ public class RoutingService {
         var routingPK = new RoutingPK(clientId,mnoApiEndpointId);
 
         if(!routingRepository.existsById(routingPK)){
-            String redisKey = clientId+":"+endpointEntity.get().getMnoId().getId()+":"+endpointEntity.get().getId();
-            var routingEntity = new Routing(routingPK, updateRoutingEntryReqDto.isCacheActive(), updateRoutingEntryReqDto.getCachePeriod(), ZonedDateTime.now(), redisKey, ZonedDateTime.now());
+            var routingEntity = new Routing(routingPK, updateRoutingEntryReqDto.isCacheActive(), ZonedDateTime.now(), ZonedDateTime.now());
             routingEntity = routingRepository.save(routingEntity);
 
             routingRepository.refresh(routingEntity); //refresh need to be called to reload all the object graph
@@ -175,31 +163,6 @@ public class RoutingService {
             }
         }else{
             return Optional.empty();
-        }
-    }
-
-    public void createRoutingResponseCache(Routing routing, String msisdn, String responseBody) throws IllegalArgumentException{
-        cacheService.createCache(getRoutingResponseCacheRedisKey(routing, msisdn), responseBody, routing.getCachePeriod());
-    }
-
-    public String getRoutingResponseCache(Routing routing, String msisdn) throws IllegalArgumentException{
-        return cacheService.getFromCache(getRoutingResponseCacheRedisKey(routing, msisdn));
-    }
-
-    private String getRoutingResponseCacheRedisKey(Routing routing, String msisdn) throws IllegalArgumentException{
-        if(StringUtils.isBlank(msisdn)){
-            throw new IllegalArgumentException("getRoutingResponseCacheRedisKey doesn't allow empty msisdn");
-        }
-        return routing.getRedisKey()+":"+msisdn;
-    }
-
-    public void removeRoutingResponseCache(Routing routing){
-        String pattern = routing.getRedisKey()+"*";
-        ServicesLog.getInstance().logInfo("Looking for caches with key pattern " + pattern);
-        var keys = cacheService.getKeys(pattern);
-        ServicesLog.getInstance().logInfo("Found " + keys.size() + " caches to be removed");
-        for (var key : keys){
-            cacheService.removeCache(key);
         }
     }
 

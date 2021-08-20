@@ -74,8 +74,6 @@ public class ClientService {
             var existingClientDB = clientRepository.findById(id);
             if(existingClientDB.isPresent()){
 
-                boolean isActiveBefore = existingClientDB.get().isCacheActive();
-
                 existingClientDB.get().setPartnerId(updateClientEntryReqDto.getPartnerId());
                 existingClientDB.get().setCacheActive(updateClientEntryReqDto.isCacheActive());
                 existingClientDB.get().setUpdatedAt(ZonedDateTime.now());
@@ -84,12 +82,6 @@ public class ClientService {
 
                 ClientEntryDto result = new ClientEntryDto();
                 result.parseFrom(updatedClient);
-
-                if ((!updatedClient.isCacheActive()) && (isActiveBefore)) {
-                    for(var routing : updatedClient.getRoutingCollection()){
-                        routingService.removeRoutingResponseCache(routing);
-                    }
-                }
 
                 return result;
             }else{

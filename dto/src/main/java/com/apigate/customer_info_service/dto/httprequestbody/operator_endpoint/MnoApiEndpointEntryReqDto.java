@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -26,4 +27,9 @@ public class MnoApiEndpointEntryReqDto {
     @NotBlank(message = "url must have value",  groups = Step1.class)
     @Size(max = 2000, message = "url invalid length", groups = Step2.class)
     private String url;
+
+    @JsonProperty
+    @NotNull(message = "cachePeriod must have value",  groups = Step1.class)
+    private int cachePeriod;
+
 }

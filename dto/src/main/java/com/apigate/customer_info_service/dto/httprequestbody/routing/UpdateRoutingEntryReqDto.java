@@ -15,10 +15,6 @@ import javax.validation.constraints.NotNull;
 @JsonInclude
 public class UpdateRoutingEntryReqDto {
     @JsonProperty
-    @NotNull(message = "cachePeriod must have value",  groups = Step1.class)
-    private int cachePeriod;
-
-    @JsonProperty
     @NotNull(message = "cacheActive must have value",  groups = Step1.class)
     private boolean cacheActive;
 }

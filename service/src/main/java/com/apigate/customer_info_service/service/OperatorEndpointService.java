@@ -7,6 +7,7 @@ import com.apigate.customer_info_service.entities.MnoApiEndpoint;
 import com.apigate.customer_info_service.repository.MnoApiEndpointRepository;
 import com.apigate.exceptions.db.RecordNotFoundException;
 import com.apigate.logging.ServicesLog;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
@@ -27,18 +28,28 @@ public class OperatorEndpointService {
     @Autowired
     private RoutingService routingService;
 
+    @Autowired
+    private CacheService cacheService;
+
     public MnoApiEndpointEntryDto update(String id, MnoApiEndpointEntryReqDto mnoApiEndpointEntryReqDto) throws RecordNotFoundException {
         var endpointDB = mnoApiEndpointRepository.findById(id);
 
         if(endpointDB.isPresent()){
+            var cachePeriodBefore = endpointDB.get().getCachePeriod();
+
             endpointDB.get().setName(mnoApiEndpointEntryReqDto.getName());
             endpointDB.get().setUrl(mnoApiEndpointEntryReqDto.getUrl());
             endpointDB.get().setUpdatedAt(ZonedDateTime.now());
+            endpointDB.get().setCachePeriod(mnoApiEndpointEntryReqDto.getCachePeriod());
 
-            var result = mnoApiEndpointRepository.save(endpointDB.get());
+            var resultAfterUpdate = mnoApiEndpointRepository.save(endpointDB.get());
 
             var mnoApiEndpointEntryDto = new MnoApiEndpointEntryDto();
-            mnoApiEndpointEntryDto.parseFrom(result);
+            mnoApiEndpointEntryDto.parseFrom(resultAfterUpdate);
+
+            if (cachePeriodBefore != resultAfterUpdate.getCachePeriod()) {
+                removeAPIResponseCache(resultAfterUpdate);
+            }
 
             return mnoApiEndpointEntryDto;
         }else{
@@ -74,10 +85,31 @@ public class OperatorEndpointService {
     }
 
     public void clearCache(MnoApiEndpoint endpointDB) {
-        var routingList = routingService.getRoutingByMnoApiEndpointId(endpointDB.getId());
-        for (var routing : routingList) {
-            routingService.removeRoutingResponseCache(routing);
-        }
+        removeAPIResponseCache(endpointDB);
     }
 
+    public void createAPIResponseCache(MnoApiEndpoint apiEndpoint, String msisdn, String responseBody) throws IllegalArgumentException{
+        cacheService.createCache(getAPIResponseCacheRedisKey(apiEndpoint, msisdn), responseBody, apiEndpoint.getCachePeriod());
+    }
+
+    public String getAPIResponseCache(MnoApiEndpoint apiEndpoint, String msisdn) throws IllegalArgumentException{
+        return cacheService.getFromCache(getAPIResponseCacheRedisKey(apiEndpoint, msisdn));
+    }
+
+    private String getAPIResponseCacheRedisKey(MnoApiEndpoint apiEndpoint, String msisdn) throws IllegalArgumentException{
+        if(StringUtils.isBlank(msisdn)){
+            throw new IllegalArgumentException(Thread.currentThread().getStackTrace()[1].getMethodName() + " doesn't allow empty msisdn");
+        }
+        return apiEndpoint.getRedisKey()+":"+msisdn;
+    }
+
+    public void removeAPIResponseCache(MnoApiEndpoint apiEndpoint){
+        String pattern = apiEndpoint.getRedisKey()+":*";
+        ServicesLog.getInstance().logInfo("Looking for caches with key pattern " + pattern);
+        var keys = cacheService.getKeys(pattern);
+        ServicesLog.getInstance().logInfo("Found " + keys.size() + " caches to be removed");
+        for (var key : keys){
+            cacheService.removeCache(key);
+        }
+    }
 }

@@ -63,7 +63,7 @@ public class DefaultController extends AbstractController{
                     try{
                         if(routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
                             ServicesLog.getInstance().logInfo("Cache is on");
-                            cacheResponse = routingService.getRoutingResponseCache(routing.get(), incomingRequestMsisdn);
+                            cacheResponse = operatorEndpointService.getAPIResponseCache(routing.get().getMnoApiEndpoint(), incomingRequestMsisdn);
                         }else{
                             ServicesLog.getInstance().logInfo("Cache is off");
                         }
@@ -87,7 +87,7 @@ public class DefaultController extends AbstractController{
                             String responseBody = httpResponse.getBody();
                             try{
                                 if (routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
-                                    routingService.createRoutingResponseCache(routing.get(),incomingRequestMsisdn,responseBody);
+                                    operatorEndpointService.createAPIResponseCache(routing.get().getMnoApiEndpoint(),incomingRequestMsisdn,responseBody);
                                     responseBody = maskingService.maskTheResponse(routing.get(), responseBody);
                                 }
                             }catch (Exception e){
