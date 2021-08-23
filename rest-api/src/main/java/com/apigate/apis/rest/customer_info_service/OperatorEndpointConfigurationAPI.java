@@ -25,7 +25,7 @@ import javax.validation.Valid;
  * @date 12/6/2021 7:32 PM
  */
 @RestController
-@RequestMapping("/customer-info-service/v1/config/endpoints")
+@RequestMapping("/customer-info-service/v2/config/endpoints")
 @Validated
 public class OperatorEndpointConfigurationAPI extends AbstractController{
 

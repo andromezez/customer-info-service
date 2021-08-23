@@ -26,7 +26,7 @@ import java.util.List;
  * @date 14/6/2021 10:50 AM
  */
 @RestController
-@RequestMapping("/customer-info-service/v1/config/routing")
+@RequestMapping("/customer-info-service/v2/config/routing")
 @Validated
 public class RoutingConfigurationAPI extends AbstractController{
 

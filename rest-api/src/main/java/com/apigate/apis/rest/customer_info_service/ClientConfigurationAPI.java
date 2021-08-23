@@ -24,7 +24,7 @@ import javax.validation.Valid;
  * @date 13/6/2021 2:17 PM
  */
 @RestController
-@RequestMapping("/customer-info-service/v1/config/clients")
+@RequestMapping("/customer-info-service/v2/config/clients")
 @Validated
 public class ClientConfigurationAPI extends AbstractController{
 

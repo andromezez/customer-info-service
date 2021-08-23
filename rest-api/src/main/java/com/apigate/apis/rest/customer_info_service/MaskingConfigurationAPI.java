@@ -26,7 +26,7 @@ import java.util.List;
  * @date 15/6/2021 4:31 PM
  */
 @RestController
-@RequestMapping("/customer-info-service/v1/config/masks")
+@RequestMapping("/customer-info-service/v2/config/masks")
 @Validated
 public class MaskingConfigurationAPI extends AbstractController{
 
