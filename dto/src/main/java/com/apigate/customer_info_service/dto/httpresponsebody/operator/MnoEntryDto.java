@@ -70,6 +70,8 @@ public class MnoEntryDto {
             mnoApiEndpointEntryDto.setUpdatedAt(endpoint.getUpdatedAt());
             mnoApiEndpointEntryDto.setName(endpoint.getName());
             mnoApiEndpointEntryDto.setOperatorId(endpoint.getMnoId().getId());
+            mnoApiEndpointEntryDto.setCachePeriod(endpoint.getCachePeriod());
+            mnoApiEndpointEntryDto.setRedisKey(endpoint.getRedisKey());
 
             this.getEndpoints().add(mnoApiEndpointEntryDto);
         }

@@ -83,7 +83,7 @@ public class RoutingService {
 
         if(routingDB.isPresent()){
 
-            routingDB.get().setCacheActive(updateRoutingEntryReqDto.isCacheActive());
+            routingDB.get().setCacheActive(updateRoutingEntryReqDto.getCacheActive());
             routingDB.get().setUpdatedAt(ZonedDateTime.now());
 
             Routing routingDBAfterUpdate = routingRepository.save(routingDB.get());
@@ -108,7 +108,7 @@ public class RoutingService {
         var routingPK = new RoutingPK(clientId,mnoApiEndpointId);
 
         if(!routingRepository.existsById(routingPK)){
-            var routingEntity = new Routing(routingPK, updateRoutingEntryReqDto.isCacheActive(), ZonedDateTime.now(), ZonedDateTime.now());
+            var routingEntity = new Routing(routingPK, updateRoutingEntryReqDto.getCacheActive(), ZonedDateTime.now(), ZonedDateTime.now());
             routingEntity = routingRepository.save(routingEntity);
 
             routingRepository.refresh(routingEntity); //refresh need to be called to reload all the object graph

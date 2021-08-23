@@ -16,5 +16,5 @@ import javax.validation.constraints.NotNull;
 public class UpdateRoutingEntryReqDto {
     @JsonProperty
     @NotNull(message = "cacheActive must have value",  groups = Step1.class)
-    private boolean cacheActive;
+    private Boolean cacheActive;
 }

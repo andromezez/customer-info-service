@@ -8,6 +8,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 /**
@@ -30,6 +31,7 @@ public class MnoApiEndpointEntryReqDto {
 
     @JsonProperty
     @NotNull(message = "cachePeriod must have value",  groups = Step1.class)
-    private int cachePeriod;
+    @PositiveOrZero(message = "cachePeriod must be positive or zero",  groups = Step2.class)
+    private Integer cachePeriod;
 
 }
