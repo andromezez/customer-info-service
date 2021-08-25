@@ -106,32 +106,32 @@ spec:
               name: customer-info-service-secret
               key: apigate.redis.password
         - name: apigate.cust-info.mask
-            valueFrom:
-              configMapKeyRef:
-                name: customer-info-service-config
-                key: apigate.cust-info.mask
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.cust-info.mask
         - name: apigate.cust-info.operator.endpoint.path-variable.msisdn
-            valueFrom:
-              configMapKeyRef:
-                name: customer-info-service-config
-                key: apigate.cust-info.operator.endpoint.path-variable.msisdn
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.cust-info.operator.endpoint.path-variable.msisdn
         - name: apigate.cust-info.operator.token.refresh.ttl
-            valueFrom:
-              configMapKeyRef:
-                name: customer-info-service-config
-                key: apigate.cust-info.operator.token.refresh.ttl
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.cust-info.operator.token.refresh.ttl
         - name: apigate.cust-info.operator.token.refresh.scheduler
-            valueFrom:
-              configMapKeyRef:
-                name: customer-info-service-config
-                key: apigate.cust-info.operator.token.refresh.scheduler
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.cust-info.operator.token.refresh.scheduler
         - name: apigate.http.client.timeout
-            valueFrom:
-              configMapKeyRef:
-                name: customer-info-service-config
-                key: apigate.http.client.timeout
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.http.client.timeout
         - name: apigate.db.deploy
-            valueFrom:
-              configMapKeyRef:
-                name: customer-info-service-config
-                key: apigate.db.deploy
+          valueFrom:
+            configMapKeyRef:
+              name: customer-info-service-config
+              key: apigate.db.deploy

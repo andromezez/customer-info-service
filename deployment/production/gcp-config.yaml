@@ -14,9 +14,9 @@ data:
   apigate.server.monitoring.threads.max: "10"
   apigate.redis.host: 10.69.131.4
   apigate.redis.port: "6379"
-  apigate.cust-info.mask: XXXXXXXXX
-  apigate.cust-info.operator.endpoint.path-variable.msisdn: msisdn
-  apigate.cust-info.operator.token.refresh.ttl: 120
-  apigate.cust-info.operator.token.refresh.scheduler: 60
-  apigate.http.client.timeout: 5
-  apigate.db.deploy: true
+  apigate.cust-info.mask: "XXXXXXXXX"
+  apigate.cust-info.operator.endpoint.path-variable.msisdn: "msisdn"
+  apigate.cust-info.operator.token.refresh.ttl: "120"
+  apigate.cust-info.operator.token.refresh.scheduler: "60"
+  apigate.http.client.timeout: "5"
+  apigate.db.deploy: "true"
