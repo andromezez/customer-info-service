@@ -23,7 +23,10 @@ public class CacheService {
 
     public boolean createLock(String key){
         try{
-            return redisTemplate.opsForValue().setIfAbsent(key, "true", Config.TOKEN_PROCESSING_LOCK_EXPIRY);
+            var result = redisTemplate.opsForValue().setIfAbsent(key, "true", Config.TOKEN_PROCESSING_LOCK_EXPIRY);
+            if(Boolean.TRUE.equals(result)){
+                return true;
+            }
         }catch (Exception e){
             ServicesLog.getInstance().logError(e);
         }
@@ -58,7 +61,7 @@ public class CacheService {
     public boolean removeCache(String key){
         try{
             var result = redisTemplate.delete(key);
-            if(result != null && result){
+            if(Boolean.TRUE.equals(result)){
                 ServicesLog.getInstance().logInfo("Cache " + key + " successfully removed");
                 return true;
             }
