@@ -96,6 +96,8 @@ public class DefaultController extends AbstractController{
                             try{
                                 if (!ignoreCache && routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
                                     operatorEndpointService.createAPIResponseCache(routing.get().getMnoApiEndpoint(),incomingRequestMsisdn,responseBody);
+                                }
+                                if(httpResponse.getCode() == HttpStatus.OK.value()){
                                     responseBody = maskingService.maskTheResponse(routing.get(), responseBody);
                                 }
                             }catch (Exception e){
