@@ -58,10 +58,18 @@ public class DefaultController extends AbstractController{
                 if(routing.isPresent()){
                     String cacheResponse = null;
 
-                    String incomingRequestMsisdn = operatorEndpointService.getMsisdn(routing.get().getMnoApiEndpoint(), request);
+                    boolean ignoreCache = false;
+                    if(StringUtils.isNotBlank(request.getQueryString())){
+                        ignoreCache = true;
+                    }
+
+                    String incomingRequestMsisdn = "";
+                    if(!ignoreCache){
+                        incomingRequestMsisdn = operatorEndpointService.getMsisdn(routing.get().getMnoApiEndpoint(), request);
+                    }
 
                     try{
-                        if(routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
+                        if(!ignoreCache && routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
                             ServicesLog.getInstance().logInfo("Cache is on");
                             cacheResponse = operatorEndpointService.getAPIResponseCache(routing.get().getMnoApiEndpoint(), incomingRequestMsisdn);
                         }else{
@@ -86,7 +94,7 @@ public class DefaultController extends AbstractController{
                         if(httpResponse.isResponseComplete()){
                             String responseBody = httpResponse.getBody();
                             try{
-                                if (routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
+                                if (!ignoreCache && routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
                                     operatorEndpointService.createAPIResponseCache(routing.get().getMnoApiEndpoint(),incomingRequestMsisdn,responseBody);
                                     responseBody = maskingService.maskTheResponse(routing.get(), responseBody);
                                 }

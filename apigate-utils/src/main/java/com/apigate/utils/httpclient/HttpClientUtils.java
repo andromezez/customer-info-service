@@ -3,6 +3,7 @@ package com.apigate.utils.httpclient;
 import com.apigate.logging.HttpClientLog;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -111,9 +112,9 @@ public class HttpClientUtils {
         return result.append(originalUrl.getProtocol())
                 .append("://")
                 .append(originalUrl.getHost())
-                .append(":")
-                .append(originalUrl.getPort())
+                .append(originalUrl.getPort()>-1?":"+originalUrl.getPort():"")
                 .append(replaceWith.getRequestURI())
+                .append(StringUtils.isNotBlank(replaceWith.getQueryString())?"?"+replaceWith.getQueryString():"")
                 .toString();
     }
 }

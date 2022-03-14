@@ -13,4 +13,5 @@ public interface MnoApiEndpointRepository extends CustomRepository<MnoApiEndpoin
     @Query("Select mae from MnoApiEndpoint mae where mae.mnoId.id = :mnoId")
     List<MnoApiEndpoint> findByMnoId(@Param("mnoId") String mnoId);
 
+    List<MnoApiEndpoint> findByIdStartingWith(String idPrefix);
 }
