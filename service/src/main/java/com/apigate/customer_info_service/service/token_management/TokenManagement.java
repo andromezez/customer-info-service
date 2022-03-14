@@ -191,7 +191,7 @@ public class TokenManagement {
                 if(StringUtils.isNoneBlank(newAccessToken,newRefreshToken,newTokenType) && newExpireIn > 0){ //success getting new valid token from refresh process or create process
                     cacheService.createCache(getTokenAccessRedisKey(mno), newAccessToken, newExpireIn);
                     cacheService.createCache(getTokenRefreshRedisKey(mno), newRefreshToken, newExpireIn);
-                    cacheService.createCache(getTokenTypeRedisKey(mno), newRefreshToken, newExpireIn);
+                    cacheService.createCache(getTokenTypeRedisKey(mno), newTokenType, newExpireIn);
 
                     cacheHasBeenRenewed = true;
                 }
