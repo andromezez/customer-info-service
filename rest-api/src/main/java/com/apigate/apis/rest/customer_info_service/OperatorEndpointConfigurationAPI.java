@@ -103,7 +103,7 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
 
     @PostMapping
     @Validated(ValidationSequence.class)
-    public ResponseEntity<Object> createSingle(@RequestHeader(name = "Mno-Id", required = false) String mnoId,
+    public ResponseEntity<Object> createSingle(@RequestHeader(name = "Operator-Id", required = false) String mnoId,
                                                @RequestBody(required = false) @Valid MnoApiEndpointEntryReqDto requestBody,
                                                BindingResult bindingResult,
                                                HttpServletRequest request){
