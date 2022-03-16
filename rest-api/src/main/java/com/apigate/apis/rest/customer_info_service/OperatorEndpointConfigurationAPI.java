@@ -113,7 +113,7 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
 
         try{
             if(StringUtils.isAnyBlank(mnoId)){
-                throw new ErrorException("Header parameters Mno-Id must have value");
+                throw new ErrorException("Header parameters Operator-Id must have value");
             }
 
             if(requestBody == null){
@@ -134,7 +134,7 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
             endpointResDto.setEndpoint(mnoEntryDto);
             endpointResDto.getOperationResult().setOperationResult(request, OperationResult.Status.SUCCESS, "", "Endpoint Entry Created");
 
-            responseEntity = ResponseEntity.status(HttpStatus.OK).body(endpointResDto);
+            responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(endpointResDto);
 
         }catch (Exception e){
             ExceptionResponse exceptionResponse = processException(request, e);
