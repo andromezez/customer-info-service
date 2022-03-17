@@ -2,16 +2,19 @@ package com.apigate;
 
 import com.apigate.config.Config;
 import com.apigate.customer_info_service.repository.CustomRepositoryImpl;
+import com.apigate.logging.ServicesLog;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.TaskScheduler;
@@ -19,6 +22,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
+import java.lang.management.ManagementFactory;
 
 /**
  * @author Bayu Utomo
@@ -75,5 +80,12 @@ public class ApplicationStart {
         threadPoolTaskScheduler.setThreadNamePrefix(
                 "Custom-Pool-Scheduler");
         return threadPoolTaskScheduler;
+    }
+
+    @EventListener
+    public void printGCInfoToLogs(ApplicationReadyEvent event) {
+        for(var bean : ManagementFactory.getGarbageCollectorMXBeans()){
+            ServicesLog.getInstance().logInfo(bean.getName() + " | " + bean.getObjectName());
+        }
     }
 }
