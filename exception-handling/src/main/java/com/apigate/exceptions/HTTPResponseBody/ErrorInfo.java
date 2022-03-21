@@ -30,7 +30,7 @@ public class ErrorInfo extends GenericResponseMessageDto{
 
     public ErrorInfo(HttpServletRequest request, ResponseStatusException ex) {
         this(request.getMethod(),
-                request.getRequestURL().toString(),
+                resolveURL(request),
                 OperationResult.Status.ERROR,
                 "",
                 "");
@@ -39,7 +39,7 @@ public class ErrorInfo extends GenericResponseMessageDto{
 
     public ErrorInfo(HttpServletRequest request, Exception ex) {
         this(request.getMethod(),
-                request.getRequestURL().toString(),
+                resolveURL(request),
                 OperationResult.Status.ERROR,
                 "",
                 "");
@@ -47,6 +47,17 @@ public class ErrorInfo extends GenericResponseMessageDto{
     }
 
     private ErrorInfo(){}
+
+    private static String resolveURL(HttpServletRequest request){
+        var url = new StringBuilder(request.getScheme() != null ? request.getScheme() : "empty");
+        url.append("://")
+                .append(request.getServerName() != null ? request.getServerName() : "empty")
+                .append(":")
+                .append(request.getServerPort())
+                .append(request.getRequestURI() != null ? request.getRequestURI() : "empty");
+
+        return url.toString();
+    }
 
     private void resolveFromException(Exception ex){
         OperationResult.Status status = OperationResult.Status.ERROR;
