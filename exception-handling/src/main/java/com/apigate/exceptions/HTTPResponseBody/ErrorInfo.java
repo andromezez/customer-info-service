@@ -8,6 +8,7 @@ import com.apigate.exceptions.internal.ErrorException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +91,7 @@ public class ErrorInfo extends GenericResponseMessageDto{
             responseReason = ResponseCodes.Errors.CIS9999.getMessage()+ " | " + ((ResponseStatusException) ex).getReason();
         }else {
             responseCode = ResponseCodes.Errors.CIS9999.getCode();
-            responseReason = ResponseCodes.Errors.CIS9999.getMessage();
+            responseReason = ResponseCodes.Errors.CIS9999.getMessage() + " | " + ExceptionUtils.getMessage(ex);
         }
         super.operationResult.setStatus(status);
         super.operationResult.setCode(responseCode);
