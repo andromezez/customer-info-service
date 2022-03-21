@@ -50,7 +50,7 @@ public class DefaultController extends AbstractController{
         InitiatedData initiatedData = null;
 
         try{
-            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, HttpStatus.OK, Thread.currentThread().getStackTrace()[1].getMethodName());
+            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, Thread.currentThread().getStackTrace()[1].getMethodName());
             responseEntity = initiatedData.responseEntity;
 
             if(StringUtils.isNotBlank(partnerId)){
@@ -141,7 +141,7 @@ public class DefaultController extends AbstractController{
         ResponseEntity responseEntity = null;
         InitiatedData initiatedData = null;
         try{
-            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, Thread.currentThread().getStackTrace()[1].getMethodName());
             responseEntity = initiatedData.responseEntity;
 
             throw new ErrorException(new Exception("Intentionally throw exception to test GCP stackdriver output on printing exception's stack traces"));

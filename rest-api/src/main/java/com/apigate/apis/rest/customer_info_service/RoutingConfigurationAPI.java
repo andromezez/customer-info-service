@@ -37,7 +37,7 @@ public class RoutingConfigurationAPI extends AbstractController{
     public ResponseEntity<Object> retrieveList(@RequestHeader(name = "Client-Id", required = false) String clientId,
                                                   @RequestHeader(name = "Operator-Id", required = false) String operatorId,
                                                   HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest("",request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest("",request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -75,7 +75,7 @@ public class RoutingConfigurationAPI extends AbstractController{
                                                 @RequestHeader(name = "Endpoint-Id", required = false) String endpointId,
                                                 @RequestBody(required = false) @Valid UpdateRoutingEntryReqDto requestBody,
                                                 BindingResult bindingResult, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -113,7 +113,7 @@ public class RoutingConfigurationAPI extends AbstractController{
                                                    @RequestHeader(name = "Endpoint-Id", required = false) String endpointId,
                                                    @RequestBody(required = false) @Valid UpdateRoutingEntryReqDto requestBody,
                                                    BindingResult bindingResult, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 

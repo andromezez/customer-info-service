@@ -37,7 +37,7 @@ public class MaskingConfigurationAPI extends AbstractController{
     public ResponseEntity<Object> retrieveList(@RequestHeader(name = "Client-Id", required = false) String clientId,
                                                @RequestHeader(name = "Endpoint-Id", required = false) String endpointId,
                                                HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest("",request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest("",request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -76,7 +76,7 @@ public class MaskingConfigurationAPI extends AbstractController{
                                                @RequestHeader(name = "Json-Path", required = false) String jsonPath,
                                                @RequestBody(required = false) @Valid UpdateMaskingEntryReqDto requestBody,
                                                BindingResult bindingResult, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -115,7 +115,7 @@ public class MaskingConfigurationAPI extends AbstractController{
                                                @RequestHeader(name = "Endpoint-Id", required = false) String endpointId,
                                                @RequestBody(required = false) @Valid UpdateMaskingEntryReqDto requestBody,
                                                BindingResult bindingResult, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 

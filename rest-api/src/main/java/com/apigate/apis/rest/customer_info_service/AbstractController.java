@@ -78,13 +78,9 @@ public class AbstractController {
         ResponseEntity responseEntity;
         HTTPRequestLog requestLog;
     }
-    protected InitiatedData initiateDataAndLogRequest(Object requestBody, HttpServletRequest request, HttpStatus httpStatus, String apiMethodEndpoint){
+    protected InitiatedData initiateDataAndLogRequest(Object requestBody, HttpServletRequest request, String apiMethodEndpoint){
         InitiatedData initiatedData = new InitiatedData();
-        if(HttpStatus.OK == httpStatus){
-            initiatedData.responseEntity = ResponseEntity.ok().build();
-        }else{
-            initiatedData.responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorInfo(request,new IllegalStateException(RESPONSE_ENTITY_INITIAL_VALUE)));
-        }
+        initiatedData.responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorInfo(request,new IllegalStateException(RESPONSE_ENTITY_INITIAL_VALUE)));
         Logger.registerApiMethodEndpoint(apiMethodEndpoint);
         initiatedData.requestLog = logRequest(Logger.getReqIdFromContext(),requestBody, request);
         return initiatedData;

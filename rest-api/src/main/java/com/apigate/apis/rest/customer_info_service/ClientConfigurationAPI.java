@@ -33,7 +33,7 @@ public class ClientConfigurationAPI extends AbstractController{
 
     @GetMapping
     public ResponseEntity<Object> retrieveList(@RequestHeader(name = "Partner-Id", required = false) String partnerId, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest("",request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest("",request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -60,7 +60,7 @@ public class ClientConfigurationAPI extends AbstractController{
     @PostMapping
     @Validated(ValidationSequence.class)
     public ResponseEntity<Object> createSingle(@RequestBody(required = false) @Valid CreateClientEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -90,7 +90,7 @@ public class ClientConfigurationAPI extends AbstractController{
     @PutMapping("{id}")
     @Validated(ValidationSequence.class)
     public ResponseEntity<Object> updateSingle(@PathVariable("id") String id, @RequestBody(required = false) @Valid UpdateClientEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 

@@ -35,7 +35,7 @@ public class OperatorConfigurationAPI extends AbstractController{
 
     @GetMapping
     public ResponseEntity<Object> retrieveList(@RequestHeader(name = "Name", required = false) String name, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest("",request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest("",request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -62,7 +62,7 @@ public class OperatorConfigurationAPI extends AbstractController{
     @PutMapping("{id}")
     @Validated(ValidationSequence.class)
     public ResponseEntity<Object> updateSingle(@PathVariable("id") String id, @RequestBody(required = false) @Valid MnoEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request,HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -93,7 +93,7 @@ public class OperatorConfigurationAPI extends AbstractController{
     @PostMapping("{id}/clear-cache")
     public ResponseEntity<Object> clearCache(@PathVariable("id") String id, HttpServletRequest request){
 
-        InitiatedData initiatedData = initiateDataAndLogRequest("",request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest("",request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
