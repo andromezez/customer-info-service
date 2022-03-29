@@ -50,7 +50,7 @@ public class DefaultController extends AbstractController{
         InitiatedData initiatedData = null;
 
         try{
-            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, HttpStatus.OK, Thread.currentThread().getStackTrace()[1].getMethodName());
+            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, Thread.currentThread().getStackTrace()[1].getMethodName());
             responseEntity = initiatedData.responseEntity;
 
             if(StringUtils.isNotBlank(partnerId)){
@@ -58,10 +58,18 @@ public class DefaultController extends AbstractController{
                 if(routing.isPresent()){
                     String cacheResponse = null;
 
-                    String incomingRequestMsisdn = operatorEndpointService.getMsisdn(routing.get().getMnoApiEndpoint(), request);
+                    boolean ignoreCache = false;
+                    if(StringUtils.isNotBlank(request.getQueryString())){
+                        ignoreCache = true;
+                    }
+
+                    String incomingRequestMsisdn = "";
+                    if(!ignoreCache){
+                        incomingRequestMsisdn = operatorEndpointService.getMsisdn(routing.get().getMnoApiEndpoint(), request);
+                    }
 
                     try{
-                        if(routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
+                        if(!ignoreCache && routing.get().getClient().isCacheActive() && routing.get().isCacheActive()){
                             ServicesLog.getInstance().logInfo("Cache is on");
                             cacheResponse = operatorEndpointService.getAPIResponseCache(routing.get().getMnoApiEndpoint(), incomingRequestMsisdn);
                         }else{
@@ -85,9 +93,12 @@ public class DefaultController extends AbstractController{
                         var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
                             String responseBody = httpResponse.getBody();
+                            responseBody = StringUtils.replaceChars(responseBody,'\n','\0');
                             try{
-                                if (routing.get().getClient().isCacheActive() && routing.get().isCacheActive() && (httpResponse.getCode() == HttpStatus.OK.value())) {
-                                    operatorEndpointService.createAPIResponseCache(routing.get().getMnoApiEndpoint(),incomingRequestMsisdn,responseBody);
+                                if (httpResponse.getCode() == HttpStatus.OK.value()) {
+                                    if (!ignoreCache && routing.get().getClient().isCacheActive() && routing.get().isCacheActive()) {
+                                        operatorEndpointService.createAPIResponseCache(routing.get().getMnoApiEndpoint(),incomingRequestMsisdn,responseBody);
+                                    }
                                     responseBody = maskingService.maskTheResponse(routing.get(), responseBody);
                                 }
                             }catch (Exception e){
@@ -130,7 +141,7 @@ public class DefaultController extends AbstractController{
         ResponseEntity responseEntity = null;
         InitiatedData initiatedData = null;
         try{
-            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+            initiatedData = initiateDataAndLogRequest(HTTPUtils.extractRequestBody(request), request, Thread.currentThread().getStackTrace()[1].getMethodName());
             responseEntity = initiatedData.responseEntity;
 
             throw new ErrorException(new Exception("Intentionally throw exception to test GCP stackdriver output on printing exception's stack traces"));

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URL;
 
 /**
  * @author Bayu Utomo
@@ -38,7 +39,7 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
     @Validated(ValidationSequence.class)
     public ResponseEntity<Object> updateSingle(@PathVariable("id") String id, @RequestBody(required = false) @Valid MnoApiEndpointEntryReqDto requestBody, BindingResult bindingResult, HttpServletRequest request){
 
-        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -47,6 +48,12 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
                 throw new ErrorException("Request Body can't be empty");
             } else if(bindingResult.hasErrors()){
                 throw new ErrorException(bindingResult.getFieldError().getDefaultMessage());
+            }
+
+            URL url = new URL(requestBody.getUrl());
+
+            if(StringUtils.isNotBlank(url.getQuery())){
+                throw new ErrorException("Endpoint url can't have query parameters");
             }
 
             MnoApiEndpointEntryDto mnoEntryDto = operatorEndpointService.update(id, requestBody);
@@ -69,7 +76,7 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
     @PostMapping("{id}/clear-cache")
     public ResponseEntity<Object> clearCache(@PathVariable("id") String id, HttpServletRequest request){
 
-        InitiatedData initiatedData = initiateDataAndLogRequest("",request, HttpStatus.INTERNAL_SERVER_ERROR, Thread.currentThread().getStackTrace()[1].getMethodName());
+        InitiatedData initiatedData = initiateDataAndLogRequest("",request, Thread.currentThread().getStackTrace()[1].getMethodName());
         ResponseEntity responseEntity = initiatedData.responseEntity;
         HTTPRequestLog requestLog = initiatedData.requestLog;
 
@@ -83,6 +90,51 @@ public class OperatorEndpointConfigurationAPI extends AbstractController{
             genericResponseMessageDto.getOperationResult().setOperationResult(request, OperationResult.Status.SUCCESS, "", "Caches have been cleared successfully");
 
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(genericResponseMessageDto);
+
+        }catch (Exception e){
+            ExceptionResponse exceptionResponse = processException(request, e);
+            responseEntity = exceptionResponse.responseEntity;
+            throw exceptionResponse.ex;
+        }finally {
+            logResponse(requestLog, responseEntity);
+        }
+        return responseEntity;
+    }
+
+    @PostMapping
+    @Validated(ValidationSequence.class)
+    public ResponseEntity<Object> createSingle(@RequestHeader(name = "Operator-Id", required = false) String mnoId,
+                                               @RequestBody(required = false) @Valid MnoApiEndpointEntryReqDto requestBody,
+                                               BindingResult bindingResult,
+                                               HttpServletRequest request){
+        InitiatedData initiatedData = initiateDataAndLogRequest(requestBody,request, Thread.currentThread().getStackTrace()[1].getMethodName());
+        ResponseEntity responseEntity = initiatedData.responseEntity;
+        HTTPRequestLog requestLog = initiatedData.requestLog;
+
+        try{
+            if(StringUtils.isAnyBlank(mnoId)){
+                throw new ErrorException("Header parameters Operator-Id must have value");
+            }
+
+            if(requestBody == null){
+                throw new ErrorException("Request Body can't be empty");
+            } else if(bindingResult.hasErrors()){
+                throw new ErrorException(bindingResult.getFieldError().getDefaultMessage());
+            }
+
+            URL url = new URL(requestBody.getUrl());
+
+            if(StringUtils.isNotBlank(url.getQuery())){
+                throw new ErrorException("Endpoint url can't have query parameters");
+            }
+
+            var mnoEntryDto = operatorEndpointService.create(mnoId, requestBody);
+
+            var endpointResDto = new EndpointResDto();
+            endpointResDto.setEndpoint(mnoEntryDto);
+            endpointResDto.getOperationResult().setOperationResult(request, OperationResult.Status.SUCCESS, "", "Endpoint Entry Created");
+
+            responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(endpointResDto);
 
         }catch (Exception e){
             ExceptionResponse exceptionResponse = processException(request, e);

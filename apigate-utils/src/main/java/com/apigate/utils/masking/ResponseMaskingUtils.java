@@ -23,6 +23,15 @@ public class ResponseMaskingUtils {
 	 * @return the string
 	 */
 	public static String responseMasking(ArrayList<String> jsonPath, String maskingValue, String reseponseBody){
+		jsonPath.sort((o1, o2) -> {
+			if(o1.length()<o2.length()){
+				return 1;
+			}else if(o1.length()>o2.length()){
+				return -1;
+			}else{
+				return 0;
+			}
+		});
 
 		DocumentContext jsonCtx = JsonPath.parse(reseponseBody);
 

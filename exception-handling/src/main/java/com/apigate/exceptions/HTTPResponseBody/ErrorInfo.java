@@ -8,6 +8,7 @@ import com.apigate.exceptions.internal.ErrorException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,7 @@ public class ErrorInfo extends GenericResponseMessageDto{
 
     public ErrorInfo(HttpServletRequest request, ResponseStatusException ex) {
         this(request.getMethod(),
-                request.getRequestURL().toString(),
+                resolveURL(request),
                 OperationResult.Status.ERROR,
                 "",
                 "");
@@ -39,7 +40,7 @@ public class ErrorInfo extends GenericResponseMessageDto{
 
     public ErrorInfo(HttpServletRequest request, Exception ex) {
         this(request.getMethod(),
-                request.getRequestURL().toString(),
+                resolveURL(request),
                 OperationResult.Status.ERROR,
                 "",
                 "");
@@ -47,6 +48,17 @@ public class ErrorInfo extends GenericResponseMessageDto{
     }
 
     private ErrorInfo(){}
+
+    private static String resolveURL(HttpServletRequest request){
+        var url = new StringBuilder(request.getScheme() != null ? request.getScheme() : "empty");
+        url.append("://")
+                .append(request.getServerName() != null ? request.getServerName() : "empty")
+                .append(":")
+                .append(request.getServerPort())
+                .append(request.getRequestURI() != null ? request.getRequestURI() : "empty");
+
+        return url.toString();
+    }
 
     private void resolveFromException(Exception ex){
         OperationResult.Status status = OperationResult.Status.ERROR;
@@ -79,7 +91,7 @@ public class ErrorInfo extends GenericResponseMessageDto{
             responseReason = ResponseCodes.Errors.CIS9999.getMessage()+ " | " + ((ResponseStatusException) ex).getReason();
         }else {
             responseCode = ResponseCodes.Errors.CIS9999.getCode();
-            responseReason = ResponseCodes.Errors.CIS9999.getMessage();
+            responseReason = ResponseCodes.Errors.CIS9999.getMessage() + " | " + ExceptionUtils.getMessage(ex);
         }
         super.operationResult.setStatus(status);
         super.operationResult.setCode(responseCode);

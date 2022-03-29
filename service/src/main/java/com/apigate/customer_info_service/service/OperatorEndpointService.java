@@ -5,7 +5,9 @@ import com.apigate.customer_info_service.dto.httprequestbody.operator_endpoint.M
 import com.apigate.customer_info_service.dto.httpresponsebody.operator_endpoint.MnoApiEndpointEntryDto;
 import com.apigate.customer_info_service.entities.MnoApiEndpoint;
 import com.apigate.customer_info_service.repository.MnoApiEndpointRepository;
+import com.apigate.customer_info_service.repository.MnoRepository;
 import com.apigate.exceptions.db.RecordNotFoundException;
+import com.apigate.exceptions.internal.ErrorException;
 import com.apigate.logging.ServicesLog;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class OperatorEndpointService {
     @Autowired
     private CacheService cacheService;
 
+    @Autowired
+    private MnoRepository mnoRepository;
+
     public MnoApiEndpointEntryDto update(String id, MnoApiEndpointEntryReqDto mnoApiEndpointEntryReqDto) throws RecordNotFoundException {
         var endpointDB = mnoApiEndpointRepository.findById(id);
 
@@ -55,6 +60,61 @@ public class OperatorEndpointService {
         }else{
             throw new RecordNotFoundException(id);
         }
+    }
+
+    public MnoApiEndpointEntryDto create(String mnoId, MnoApiEndpointEntryReqDto mnoApiEndpointEntryReqDto) throws ErrorException {
+        var mnoEntity = mnoRepository.findById(mnoId);
+
+        if(mnoEntity.isEmpty()){
+            throw new RecordNotFoundException(mnoId);
+        }
+
+        var createdAt = ZonedDateTime.now();
+        var updatedAt = createdAt;
+
+        var idBuilder = new StringBuilder(mnoId);
+        idBuilder.append("api");
+        String prefix = idBuilder.toString();
+
+        var recordWithIdPrefix = mnoApiEndpointRepository.findByIdStartingWith(prefix);
+
+        int counter = -1;
+        for(var record : recordWithIdPrefix){
+            var numberString = StringUtils.stripStart(StringUtils.strip(record.getId()),prefix);
+            try{
+                var number = Integer.valueOf(numberString);
+                if(number.intValue() > counter){
+                    counter = number.intValue();
+                }
+            } catch (NumberFormatException e) {
+                //ignore purposely
+            }
+        }
+
+        if(counter > -1){
+            counter++;
+        }else{
+            counter = 1;
+        }
+
+        var id = idBuilder.append(counter).toString();
+
+        var mnoApiEndpointEntity = new MnoApiEndpoint(id,
+                mnoApiEndpointEntryReqDto.getUrl(),
+                createdAt,
+                updatedAt,
+                mnoApiEndpointEntryReqDto.getName(),
+                mnoApiEndpointEntryReqDto.getCachePeriod(),
+                mnoId+":"+id);
+        mnoApiEndpointEntity.setMnoId(mnoEntity.get());
+
+        mnoApiEndpointEntity = mnoApiEndpointRepository.save(mnoApiEndpointEntity);
+        mnoApiEndpointRepository.refresh(mnoApiEndpointEntity);
+
+        var result = new MnoApiEndpointEntryDto();
+        result.parseFrom(mnoApiEndpointEntity);
+
+        return result;
     }
 
     public String getMsisdn(MnoApiEndpoint endpoint, HttpServletRequest request) {
