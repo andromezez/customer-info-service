@@ -93,7 +93,6 @@ public class DefaultController extends AbstractController{
                         var httpResponse = HttpClientUtils.executeRequest(httpGet);
                         if(httpResponse.isResponseComplete()){
                             String responseBody = httpResponse.getBody();
-                            responseBody = StringUtils.replaceChars(responseBody,'\n','\0');
                             try{
                                 if (httpResponse.getCode() == HttpStatus.OK.value()) {
                                     if (!ignoreCache && routing.get().getClient().isCacheActive() && routing.get().isCacheActive()) {
